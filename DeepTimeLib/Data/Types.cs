@@ -23,6 +23,6 @@ public record struct ScheduleContext(DayOfWeek DayOfWeek, bool IsHolliday, TimeO
 public record struct WorkloadContextEntry(int MinutesEstimate, int Count);
 public record struct WorkloadContext(WorkloadContextEntry[,] MinutesEstimate);
 public record struct State(WorkloadContext TODO, WorkloadContext Done, ScheduleContext ScheduleContext);
-public record struct Action(Priority Priority, Attractiveness Attractiveness, bool Rest);
+public record struct Advice(Priority Priority, Attractiveness Attractiveness, bool Rest);
 
 public record struct TimeBounds(TimeOnly Start, TimeOnly End);

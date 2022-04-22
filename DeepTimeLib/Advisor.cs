@@ -3,7 +3,7 @@
 namespace DeepTime.Lib;
 
 public class Advisor<TAgent, TScheduleSource>
-    where TAgent : IAgent<State, Data.Action>
+    where TAgent : IAgent<State, Data.Advice>
     where TScheduleSource : IScheduleSource
 {
     private readonly TAgent _agent;
@@ -54,23 +54,26 @@ public class Advisor<TAgent, TScheduleSource>
         Tasks[index] = taskUpdate;
     }
 
+    public void StartDay()
+        => _agent.StartEpisode(CollectCurrentState());
+
     public void FinishDay() 
         => _agent.EndEpisode(CollectCurrentState(), CalculateEpisodeReward());
 
-    private (Data.Action, Func<Data.Task, bool>) GetNextActionWithPredicate(State state)
+    private (Data.Advice, Func<Data.Task, bool>) GetNextActionWithPredicate(State state)
     {
         var action = GetNextAction(state);
 
         return (action, GetTaskPredicate(action));
     }
 
-    private static Func<Data.Task, bool> GetTaskPredicate(Data.Action action) =>
+    private static Func<Data.Task, bool> GetTaskPredicate(Data.Advice action) =>
         task => task.Priority == action.Priority && task.Attractiveness == action.Attractiveness;
 
 
-    private Data.Action GetNextAction(State state)
+    private Data.Advice GetNextAction(State state)
     {
-        _agent.SetNext(state, 0.0);
+        _agent.SetNext(state, 0.0f);
         return _agent.Eval();
     }
 
@@ -116,16 +119,16 @@ public class Advisor<TAgent, TScheduleSource>
         return new WorkloadContext(entryTable);
     }
 
-    private double CalculateEpisodeReward() 
+    private float CalculateEpisodeReward() 
         => Tasks.Select(task => 
         task.Done ? _config.ComplitionRewards[(int)task.Priority] : _config.FailurePenalties[(int)task.Priority]
         ).Sum();
 }
 
-public record struct AdvisorConfig(double[] ComplitionRewards, double[] FailurePenalties)
+public record struct AdvisorConfig(float[] ComplitionRewards, float[] FailurePenalties)
 {
     public static readonly AdvisorConfig Default = new(
-        new double[] { 1.0, 2.0, 3.0, 4.0, 5.0 },
-        new double[] { -2.0, -4.0, -6.0, -8.0, -10.0 }
+        new float[] { 1.0f, 2.0f, 3.0f, 4.0f, 5.0f },
+        new float[] { -2.0f, -4.0f, -6.0f, -8.0f, -10.0f }
     );
 }

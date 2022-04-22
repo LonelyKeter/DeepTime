@@ -4,7 +4,7 @@ using DeepTime.Lib;
 using DeepTime.Lib.Data;
 
 public class Simulation<TAgent, TScheduleSource, TUser>
-    where TAgent: IAgent<State, Action>
+    where TAgent: IAgent<State, Advice>
     where TScheduleSource : ISimulatedScheduleSource
     where TUser: IUser
 {
