@@ -40,7 +40,7 @@ public class QFunctionApproximator<TState, TStateConverter> : IQFunction<TState>
 
         _trainingStep = trainingStep;
         _learningRate = learningRate;
-    }
+    }   
 
     public void CorrectQValue(TState state, int takenAction, float correction)
     {

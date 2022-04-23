@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepTime.Simulation", "Deep
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepTime.Simulator", "DeepTime.Simulator\DeepTime.Simulator.csproj", "{22B08D9B-9D91-4743-B8EE-340D044747A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepTime.Teacher", "DeepTime.Teacher\DeepTime.Teacher.csproj", "{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepTime.Tests", "DeepTime.Tests\DeepTime.Tests.csproj", "{F7CCBC97-303D-4267-AFBA-0947F478DF74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +45,22 @@ Global
 		{22B08D9B-9D91-4743-B8EE-340D044747A9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{22B08D9B-9D91-4743-B8EE-340D044747A9}.Release|x64.ActiveCfg = Release|Any CPU
 		{22B08D9B-9D91-4743-B8EE-340D044747A9}.Release|x64.Build.0 = Release|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Debug|x64.Build.0 = Debug|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Release|x64.ActiveCfg = Release|Any CPU
+		{2F227A10-2999-4EDA-AABE-FCF5D1F5FCE7}.Release|x64.Build.0 = Release|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Debug|x64.Build.0 = Debug|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Release|x64.ActiveCfg = Release|Any CPU
+		{F7CCBC97-303D-4267-AFBA-0947F478DF74}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

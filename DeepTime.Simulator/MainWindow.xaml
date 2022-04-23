@@ -4,8 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeepTime.Simulator"
+        xmlns:v ="clr-namespace:DeepTime.Simulator.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="Auto" Width="Auto">
+        Title="MainWindow" Height="400" Width="750" >
     <Window.DataContext>
         <local:MainVM/>
     </Window.DataContext>
@@ -35,49 +36,15 @@
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto" MinWidth="350"/>
                 <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="Auto" MinWidth="340"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0"
-                    BorderBrush="Black" BorderThickness="1">
-                <ListView DataContext="{Binding TaskVM}"
-                    ItemsSource="{Binding Tasks}" 
-                    SelectedItem="{Binding SelectedTask}"
-                          SelectionMode="Single">
-                    <ListView.View>
-                        <GridView>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.Id}"
-                                            Header="Id"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Title}"
-                                            Header="Title"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.Priority}"
-                                            Header="Priority"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.Attractiveness}"
-                                            Header="Attractiveness"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.MinutesSpent}"
-                                            Header="Min. spent"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.MinutesEstimate}"
-                                            Header="Min. estimate"/>
-                            <GridViewColumn DisplayMemberBinding="{Binding Inner.Done}"
-                                            Header="Done"/>
-                        </GridView>
-                    </ListView.View>
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding Proposed}" Value="True">
-                                    <Setter Property="Background" Value="Yellow"/>
-                                </DataTrigger>
-                                <DataTrigger Binding="{Binding Inner.Done}" Value="True">
-                                    <Setter Property="Background" Value="Green"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ListView>
-            </Border>
+            <v:TaskListPanel Grid.Column="0" 
+                             Width="Auto"
+                             Height="Auto"
+                             DataContext="{Binding TaskVM}"/>
 
             <GridSplitter Grid.Column="1" 
                           HorizontalAlignment="Center" VerticalAlignment="Stretch" 
@@ -85,157 +52,19 @@
             
             <Grid Grid.Column="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="325"/>
+                    <ColumnDefinition MinWidth="325" Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <Border Grid.Column="0"
-                        BorderBrush="Black" BorderThickness="1" >
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition />
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-
-                        <StackPanel Grid.Row="0"
-                        Background="LightGray"
-                        Orientation="Horizontal"
-                        DataContext="{Binding ScheduleContext}">
-                            <TextBlock Text="{Binding DayOfWeek}"/>
-                            <TextBlock Text="{Binding Time}"/>
-                            <TextBlock Text="{Binding IsHoliday}"/>
-                        </StackPanel>
-
-                        <Grid Grid.Row="1"
-                          DataContext="{Binding TaskVM}">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-
-                            <Label Grid.Row="0" Grid.Column="0">
-                                Do task:
-                            </Label>
-                            <StackPanel Grid.Row="0" Grid.Column="1">
-                                <TextBlock Text="{Binding SelectedTask.Title.Length, Mode=OneWay}"/>
-                                <TextBlock Text="{Binding SelectedTask.Inner.Id, Mode=OneWay}"/>
-                            </StackPanel>
-
-                            <Label Grid.Row="1" Grid.Column="0">
-                                Spend minutes:
-                            </Label>
-                            <TextBox Grid.Row="1" Grid.Column="1" 
-                                 Text="{Binding SpendMinutes, Mode=TwoWay}"/>
-                            
-
-                            <Label Grid.Row="2" Grid.Column="0">
-                                Time left:
-                            </Label>
-                            <TextBox Grid.Row="2" Grid.Column="1" 
-                                 Text="{Binding TimeLeft, Mode=TwoWay}"/>
-
-                            <Grid Grid.Row="3" Grid.ColumnSpan="2" Height="30">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-
-
-                                <Button Grid.Column="0" 
-                                Command="{x:Static local:TestCommands.DoTask}">
-                                    Do task
-                                </Button>
-                                <Button Grid.Column="1" 
-                                Command="{x:Static local:TestCommands.FinishTask}">
-                                    Finish task
-                                </Button>
-                                <Button Grid.Column="2" 
-                                Command="{x:Static local:TestCommands.Rest}">
-                                    Rest
-                                </Button>
-                            </Grid>
-
-
-                            <Label Grid.Row="4" Grid.ColumnSpan="2">
-                                Add task:
-                            </Label>
-
-                            <Label Grid.Row="5" Grid.Column="0">
-                                Title:
-                            </Label>
-                            <TextBox Grid.Row="5" Grid.Column="1" 
-                                 Text="{Binding NewTaskTitle}"/>
-
-                            <Label Grid.Row="6" Grid.Column="0">
-                                Priority:
-                            </Label>
-                            <ComboBox Grid.Row="6" Grid.Column="1" 
-                                      ItemsSource="{Binding PriorityVariants}"
-                                      SelectedValue="{Binding NewTaskPriority}"/>
-
-
-                            <Label Grid.Row="7" Grid.Column="0">
-                                Attractiveness:
-                            </Label>
-                            <ComboBox Grid.Row="7" Grid.Column="1" 
-                                      ItemsSource="{Binding AttractivenessVariants}"
-                                      SelectedValue="{Binding NewTaskAttractiveness}"/>
-
-                            <Label Grid.Row="8" Grid.Column="0">
-                                Minutes estimate:
-                            </Label>
-                            <TextBox Grid.Row="8" Grid.Column="1" 
-                                 Text="{Binding NewTaskMinuteEstimate}"/>
-                        </Grid>
-
-                        <Grid Grid.Row="2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <Button Grid.Column="0" 
-                                Command="{x:Static local:TestCommands.StartDay}">
-                                Start day
-                            </Button>
-
-                            <Button Grid.Column="1"
-                                Command="{x:Static local:TestCommands.AddTask}">
-                                Add task
-                            </Button>
-
-                            <Button Grid.Column="2"
-                                Command="{x:Static local:TestCommands.FinishDay}">
-                                Finish day
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </Border>
+                <v:TaskControlPanel Grid.Column="0" 
+                                    Width="Auto"
+                                    
+                                    DataContext="{Binding TaskVM}"/>
 
                 <GridSplitter Grid.Column="1" 
                           HorizontalAlignment="Center" VerticalAlignment="Stretch" 
                           Width="2"/>
-
-                <Border Grid.Column="2">
-                    
-                </Border>
             </Grid>                   
         </Grid>
     </Grid>

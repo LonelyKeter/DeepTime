@@ -23,7 +23,7 @@ internal class KerasNN {
     {
         var model = new Sequential();
 
-        model.Add(new Input(new Shape(inputSize)));
+        model.Add(new Input(new  Shape(inputSize)));
         foreach (var size in hiddenSizes)
         {
             model.Add(new Dense(size, activation: "relu"));

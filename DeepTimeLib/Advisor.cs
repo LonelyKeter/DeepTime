@@ -68,7 +68,7 @@ public class Advisor<TAgent, TScheduleSource>
     }
 
     private static Func<Data.Task, bool> GetTaskPredicate(Data.Advice action) =>
-        task => task.Priority == action.Priority && task.Attractiveness == action.Attractiveness;
+        task => task.Priority == action.Priority && task.Attractiveness == action.Attractiveness && !task.Done;
 
 
     private Data.Advice GetNextAction(State state)

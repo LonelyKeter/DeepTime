@@ -1,6 +1,9 @@
 ﻿using DeepTime.Lib.Aproximators;
 using DeepTime.Lib.Data;
 
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
 namespace DeepTime.Lib.Agents;
 
 public class DQN<TPolicy> : IAgent<State, Advice>
@@ -8,7 +11,7 @@ public class DQN<TPolicy> : IAgent<State, Advice>
 {
     private readonly TPolicy _policy;
     private readonly QFunctionApproximator<State, StateConverter> _qApproximator;
-    private readonly AdviceEnumerator _adviceEnumerator;
+    private readonly AdviceEnumerator _adviceEnumerator = new();
 
     private readonly HyperParameters _hyperParameters;
 
@@ -16,6 +19,12 @@ public class DQN<TPolicy> : IAgent<State, Advice>
 
     private Advice? _lastAdvice;
     private State? _lastState;
+
+    public DQN(TPolicy policy, QFunctionApproximator<State, StateConverter> qApproximator, HyperParameters hyperParameters)
+    {
+        _policy = policy;
+        _qApproximator = qApproximator;
+    }
 
     public void EndEpisode(State state, float reward)
     {
@@ -55,6 +64,10 @@ public class DQN<TPolicy> : IAgent<State, Advice>
         _qApproximator.CorrectQValue(_lastState.Value, _adviceEnumerator[_lastAdvice.Value], correction);
     }
 
+    public string ToJson()
+    {
+        throw new NotImplementedException();
+    }
 
     #region Assertions
     private void AssertEpisodeInactive()

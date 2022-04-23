@@ -18,7 +18,10 @@ public enum Attractiveness
     VeryHigh,
 }
 
-public record struct Task(int Id, Attractiveness Attractiveness, Priority Priority, int MinutesEstimate, int MinutesSpent, bool Done);
+public record struct Task(int Id, Attractiveness Attractiveness, Priority Priority, int MinutesEstimate, int MinutesSpent, bool Done)
+{
+    public int LeftEstimate => MinutesEstimate - MinutesSpent;
+}
 public record struct ScheduleContext(DayOfWeek DayOfWeek, bool IsHolliday, TimeOnly Time, TimeBounds Bounds);
 public record struct WorkloadContextEntry(int MinutesEstimate, int Count);
 public record struct WorkloadContext(WorkloadContextEntry[,] MinutesEstimate);
