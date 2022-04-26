@@ -11,7 +11,7 @@ using DeepTime.Lib;
 
 namespace DeepTime.Simulator.Model;
 
-internal class Task : INotifyPropertyChanged
+public class Task : INotifyPropertyChanged
 {
     private bool _proposed = false;
 

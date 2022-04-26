@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.TaskGeneratorPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:root="clr-namespace:DeepTime.Simulator"
+             mc:Ignorable="d" 
+             d:DesignHeight="350" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance vm:TaskGeneratorVM}"
+             MinWidth="400" MinHeight="370">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+    <UserControl.Resources>
+        <Style TargetType="Label">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+
+            <Setter Property="Margin" Value="1 1"/>
+        </Style>
+
+        <Style TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="60"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.ColumnSpan="5"
+               FontSize="16"
+               FontWeight="Bold">
+            Task generating
+        </Label>
+
+        <Label Grid.Row="1" Grid.Column="1">
+            <TextBlock>
+                Average <LineBreak/> count
+            </TextBlock>
+        </Label>
+        <Label Grid.Row="1" Grid.Column="2">
+            <TextBlock>
+                Count <LineBreak/> deviation
+            </TextBlock>
+        </Label>
+        <Label Grid.Row="1" Grid.Column="3">
+            <TextBlock>
+                Average <LineBreak/> attractiveness
+            </TextBlock>
+        </Label>
+        <Label Grid.Row="1" Grid.Column="4">
+            <TextBlock>
+                Attractiveness <LineBreak/> deviation
+            </TextBlock>
+        </Label>
+
+        <Label Grid.Row="2" Grid.Column="0">
+            <TextBlock>
+                Very high <LineBreak/> priority:
+            </TextBlock>
+        </Label>
+        <local:TaskGenParametersItem Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="4"
+            DataContext="{Binding VeryHighPriority}"/>
+        
+        <Label Grid.Row="3" Grid.Column="0">
+            <TextBlock>
+                High <LineBreak/> priority:
+            </TextBlock>
+        </Label>
+        <local:TaskGenParametersItem Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4"
+            DataContext="{Binding HighPriority}"/>
+        
+        <Label Grid.Row="4" Grid.Column="0">
+            <TextBlock>
+                Medium <LineBreak/> priority:
+            </TextBlock>
+        </Label>
+        <local:TaskGenParametersItem Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4"
+            DataContext="{Binding MediumPriority}"/>
+        
+        <Label Grid.Row="5" Grid.Column="0">
+            <TextBlock>
+                Low <LineBreak/> priority:
+            </TextBlock>
+        </Label>
+        <local:TaskGenParametersItem Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="4"
+            DataContext="{Binding LowPriority}"/>
+        
+        <Label Grid.Row="6" Grid.Column="0">
+            <TextBlock>
+                Very low<LineBreak/> priority:
+            </TextBlock>
+        </Label>
+        <local:TaskGenParametersItem Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="4"
+            DataContext="{Binding VeryLowPriority}"/>
+    </Grid>
+</UserControl>

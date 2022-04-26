@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.TaskGenParametersItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm ="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="100" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance vm:TaskGenParametersVM}">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Setter Property="Margin" Value="5 0"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBox Grid.Column="0" Text="{Binding AverageCount, Mode=TwoWay}"/>
+        <TextBox Grid.Column="1" Text="{Binding CountDeviation, Mode=TwoWay}"/>
+        <ComboBox Grid.Column="2" 
+                                      ItemsSource="{Binding AttractivenessVariants}"
+                                      SelectedValue="{Binding AverageAttractiveness, Mode=TwoWay}"/>
+        <TextBox Grid.Column="3" Text="{Binding CountDeviation, Mode=TwoWay}"/>
+    </Grid>
+</UserControl>

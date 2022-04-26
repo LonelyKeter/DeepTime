@@ -13,6 +13,7 @@ public class Simulation<TAgent, TScheduleSource, TUser>
     private readonly TUser _user;    
     private readonly TScheduleSource _scheduleSource;
 
+
     public void StepForward(int minutes)
     {
         while(true)
@@ -47,7 +48,7 @@ public class Simulation<TAgent, TScheduleSource, TUser>
     {
         for (var i = 0; i < dayCount; i++)
         {
-            StepForward(timeStep);
+            SimulateDay(timeStep);
         }
     }
 }

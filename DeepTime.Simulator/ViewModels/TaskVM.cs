@@ -15,6 +15,7 @@ namespace DeepTime.Simulator.ViewModels;
 internal class TaskVM: DependencyObject
 {
     public ObservableCollection<Task> Tasks { get; } = new();
+    public TaskGeneratorVM TaskGeneratorVM { get; private init; } = new();
 
     #region Dependency props
     public Task SelectedTask

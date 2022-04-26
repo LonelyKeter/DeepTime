@@ -8,41 +8,27 @@
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="350"
              d:DataContext="{d:DesignInstance vm:TaskVM}">
-    <Border Grid.Column="0"
-                    BorderBrush="Black" BorderThickness="1">
-        <ListView ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}"
-                          SelectionMode="Single">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.Id}"
-                                            Header="Id"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Title}"
-                                            Header="Title"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.Priority}"
-                                            Header="Priority"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.Attractiveness}"
-                                            Header="Attractiveness"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.MinutesSpent}"
-                                            Header="Min. spent"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.MinutesEstimate}"
-                                            Header="Min. estimate"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Inner.Done}"
-                                            Header="Done"/>
-                </GridView>
-            </ListView.View>
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding Proposed}" Value="True">
-                            <Setter Property="Background" Value="Yellow"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Inner.Done}" Value="True">
-                            <Setter Property="Background" Value="Green"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListView.ItemContainerStyle>
-        </ListView>
-    </Border>
-
+    <ListBox ItemsSource="{Binding Tasks}" 
+             SelectedItem="{Binding SelectedTask}" SelectionMode="Single"
+             ScrollViewer.VerticalScrollBarVisibility="Visible"
+             BorderBrush="Transparent">
+        <ListBox.ItemTemplate>
+            <DataTemplate>
+                <local:TaskListItem Height="Auto"/>
+            </DataTemplate>
+        </ListBox.ItemTemplate>
+        <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Proposed}" Value="True">
+                        <Setter Property="Background" Value="Yellow"/>
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding Inner.Done}" Value="True">
+                        <Setter Property="Background" Value="Green"/>
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </ListBox.ItemContainerStyle>
+        <d:ListBoxItem Content="{d:DesignInstance local:TaskListItem}"/>
+    </ListBox>
 </UserControl>

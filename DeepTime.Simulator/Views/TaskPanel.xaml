@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.TaskPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:root ="clr-namespace:DeepTime.Simulator"
+             mc:Ignorable="d" 
+             d:DesignHeight="580" d:DesignWidth="780"
+             d:DataContext="{d:DesignInstance vm:TaskVM}">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth ="365" Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="9*"/>
+            <RowDefinition Height="4*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <local:TaskListPanel Grid.Column="0" Grid.RowSpan="3"/>
+        <local:TaskGeneratorPanel Grid.Column="1" Grid.Row="0"
+                                  DataContext="{Binding TaskGeneratorVM}"/>
+        <local:AddTaskPanel Grid.Column="2" Grid.Row="1" Margin="10 5"/>
+
+        <Grid Grid.Row="2" Grid.Column="1"
+              Height="30">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" 
+                                Command="{x:Static root:TestCommands.StartDay}">
+                Start day
+            </Button>
+
+            <Button Grid.Column="1"
+                                Command="{x:Static root:TestCommands.AddTask}">
+                Add task
+            </Button>
+
+            <Button Grid.Column="2"
+                                Command="{x:Static root:TestCommands.FinishDay}">
+                Finish day
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

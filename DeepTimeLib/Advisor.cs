@@ -1,18 +1,20 @@
 ﻿using DeepTime.Lib.Data;
 
+using Task = DeepTime.Lib.Data.Task;
+
 namespace DeepTime.Lib;
 
 public class Advisor<TAgent, TScheduleSource>
-    where TAgent : IAgent<State, Data.Advice>
+    where TAgent : IAgent<State, Advice>
     where TScheduleSource : IScheduleSource
 {
     private readonly TAgent _agent;
     private readonly TScheduleSource _scheduleSource;
     private readonly AdvisorConfig _config;
 
-    public List<Data.Task> Tasks { get; } = new List<Data.Task>();
+    public List<Task> Tasks { get; } = new List<Task>();
 
-    public IEnumerable<Data.Task>? GetAdvice()
+    public IEnumerable<Task>? GetAdvice()
     {
         var state = CollectCurrentState();
         var (action, predicate) = GetNextActionWithPredicate(state);
@@ -60,18 +62,18 @@ public class Advisor<TAgent, TScheduleSource>
     public void FinishDay() 
         => _agent.EndEpisode(CollectCurrentState(), CalculateEpisodeReward());
 
-    private (Data.Advice, Func<Data.Task, bool>) GetNextActionWithPredicate(State state)
+    private (Advice, Func<Task, bool>) GetNextActionWithPredicate(State state)
     {
         var action = GetNextAction(state);
 
         return (action, GetTaskPredicate(action));
     }
 
-    private static Func<Data.Task, bool> GetTaskPredicate(Data.Advice action) =>
+    private static Func<Task, bool> GetTaskPredicate(Advice action) =>
         task => task.Priority == action.Priority && task.Attractiveness == action.Attractiveness && !task.Done;
 
 
-    private Data.Advice GetNextAction(State state)
+    private Advice GetNextAction(State state)
     {
         _agent.SetNext(state, 0.0f);
         return _agent.Eval();
@@ -88,7 +90,7 @@ public class Advisor<TAgent, TScheduleSource>
     }
 
     private static WorkloadContext CollectDoneWorkloadContext<TTaskCollection>(TTaskCollection collection)
-        where TTaskCollection : IEnumerable<Data.Task>
+        where TTaskCollection : IEnumerable<Task>
     {
         var entryTable = new WorkloadContextEntry[5, 5];
 
@@ -105,7 +107,7 @@ public class Advisor<TAgent, TScheduleSource>
     }
 
     private static WorkloadContext CollectTodoWorkloadContext<TTaskCollection>(TTaskCollection collection)
-        where TTaskCollection : IEnumerable<Data.Task>
+        where TTaskCollection : IEnumerable<Task>
     {
         var entryTable = new WorkloadContextEntry[5, 5];
 

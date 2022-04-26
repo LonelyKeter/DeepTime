@@ -19,6 +19,7 @@ internal class MainVM : DependencyObject
     private int _lastTaskId = 0;
 
     public TaskVM TaskVM { get; } = new();
+    public UserVM UserVM { get; } = new();
 
     public ScheduleContextModel ScheduleContext
     {

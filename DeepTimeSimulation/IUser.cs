@@ -2,9 +2,9 @@
 using DeepTime.Lib.Data;
 
 public interface IUser
-{
-    List<Task> InitDay();
+{   
     UserFeedback? GetFeedback(IEnumerable<Task>? propositions, TimeOnly time);
+    void StartDay(TimeOnly time, IEnumerable<Task> tasks);
 }
 
 public record struct UserFeedback(int TaskId, int MinutesSpent, bool Done, int NewEstimate);
