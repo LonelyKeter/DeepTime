@@ -3,7 +3,8 @@
 using DeepTime.Lib;
 public interface ISimulatedScheduleSource: IScheduleSource
 {
-    bool StepForward(int minutesCount);
-    TimeOnly GetCurrentTime();
+    TimeOnly CurrentTime { get; }
+
+    void StepForward(int minutesCount);
     void StartNextDay();
 }

@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace DeepTime.Simulator.Views
 {
     /// <summary>
-    /// Логика взаимодействия для TaskControlPanel.xaml
+    /// Логика взаимодействия для SimulationControlPanel.xaml
     /// </summary>
-    public partial class TaskControlPanel : UserControl
+    public partial class SimulationControlPanel : UserControl
     {
-        public TaskControlPanel()
+        public SimulationControlPanel()
         {
             InitializeComponent();
         }

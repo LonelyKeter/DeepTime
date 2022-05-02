@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DeepTime.Lib.Agents;
 
-public record struct HyperParameters(float LearningRate, float DiscountFactor)
+public record struct HyperParameters(double LearningRate, double DiscountFactor)
 {
 
 }

@@ -24,13 +24,13 @@
             <Setter Property="Margin" Value="5 0"/>
         </Style>
         <Style TargetType="TextBox">
-            <Setter Property="Height"  Value="30"/>
+            <Setter Property="Height"  Value="20"/>
             <Setter Property="MinWidth" Value="80"/>
             <Setter Property="MaxWidth" Value="120"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
         </Style>
         <Style TargetType="ComboBox">
-            <Setter Property="Height"  Value="30"/>
+            <Setter Property="Height"  Value="20"/>
             <Setter Property="MinWidth" Value="80"/>
             <Setter Property="MaxWidth" Value="120"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>

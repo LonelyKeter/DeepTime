@@ -13,6 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using DeepTime.Simulator.ViewModels;
+
 namespace DeepTime.Simulator.Views
 {
     /// <summary>
@@ -23,6 +25,13 @@ namespace DeepTime.Simulator.Views
         public TaskPanel()
         {
             InitializeComponent();
+            Loaded += (s, e) => AddCommandBindinds();
+        }
+
+        private void AddCommandBindinds()
+        {
+            var taskVM = (TaskVM)DataContext;
+            CommandBindings.AddRange(taskVM.CreateCommandBindings());
         }
     }
 }

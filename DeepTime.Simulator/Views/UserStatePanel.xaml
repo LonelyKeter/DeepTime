@@ -5,9 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:sim="clr-namespace:DeepTime.Simulation;assembly=DeepTime.Simulation"
+             xmlns:conv="clr-namespace:DeepTime.Simulator.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="250" d:DesignWidth="380"
-             MinHeight="250" MinWidth="380"
+             d:DesignHeight="130" d:DesignWidth="300"
+             MinHeight="130" MinWidth="300"
              d:DataContext="{d:DesignInstance sim:UserState}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -17,7 +18,6 @@
 
     <UserControl.Resources>
         <Style TargetType="Label">
-            <Setter Property="FontSize" Value="14"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
         <Style TargetType="TextBlock">
@@ -29,15 +29,25 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition/>
-            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0"
                FontSize="16" FontWeight="Bold">
-            User state:
+            User state
         </Label>
 
         <Grid Grid.Row="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsResting}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+            
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -55,7 +65,8 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="0"
-                   Content="{Binding MinutesWorked}"/>
+                   Content="{Binding MinutesWorked}"
+                   d:Content="75"/>
 
             <Label Grid.Row="0" Grid.Column="1">
                 <TextBlock>
@@ -63,7 +74,8 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="1"
-                   Content="{Binding MinutesWorkedContiniously}"/>
+                   Content="{Binding MinutesWorkedContiniously}"
+                   d:Content="60"/>
 
             <Label Grid.Row="0" Grid.Column="2">
                 <TextBlock>
@@ -71,12 +83,23 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="2"
-                   Content="{Binding MinutesWorked}"/>
+                   Content="{Binding MinutesWorked}"
+                   d:Content="40"/>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="1">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsResting}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
@@ -92,7 +115,8 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="0"
-                   Content="{Binding MinutesRested}"/>
+                   Content="{Binding MinutesRested}"
+                   d:Content="0"/>
 
             <Label Grid.Row="0" Grid.Column="1">
                 <TextBlock>
@@ -100,15 +124,8 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="1"
-                   Content="{Binding IsResting}"/>
-
-            <Label Grid.Row="0" Grid.Column="2">
-                <TextBlock>
-                    Rest <LineBreak/> started at:
-                </TextBlock>
-            </Label>
-            <Label Grid.Row="1" Grid.Column="2"
-                   Content="{Binding RestStarted}"/>
+                   Content="{Binding IsResting}"
+                   d:Content="False"/>
         </Grid>
     </Grid>
 </UserControl>

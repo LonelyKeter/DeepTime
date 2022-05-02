@@ -9,11 +9,18 @@ namespace DeepTime.Lib.Agents;
 public class DQN<TPolicy> : IAgent<State, Advice>
     where TPolicy : IPolicy<State>
 {
+    private HyperParameters _hyperParameters;
+
     private readonly TPolicy _policy;
     private readonly QFunctionApproximator<State, StateConverter> _qApproximator;
     private readonly AdviceEnumerator _adviceEnumerator = new();
 
-    private readonly HyperParameters _hyperParameters;
+    public HyperParameters HyperParameters => _hyperParameters;
+
+    public void SetLearningRate(double rate) => _hyperParameters.LearningRate = rate;
+    public void SetDiscountFactor(double factor) => _hyperParameters.DiscountFactor = factor;
+
+    
 
     private bool InEpisode => _lastState.HasValue;
 
@@ -24,9 +31,12 @@ public class DQN<TPolicy> : IAgent<State, Advice>
     {
         _policy = policy;
         _qApproximator = qApproximator;
+        _hyperParameters = hyperParameters;
     }
 
-    public void EndEpisode(State state, float reward)
+
+
+    public void EndEpisode(State state, double reward)
     {
         if (!InEpisode)
             throw new InvalidOperationException("Episode wasn't started.");
@@ -50,7 +60,7 @@ public class DQN<TPolicy> : IAgent<State, Advice>
         return _adviceEnumerator[encoded];
     }
 
-    public void SetNext(State state, float reward)
+    public void SetNext(State state, double reward)
     {
         AssertEpisodeActive();
 
@@ -58,10 +68,15 @@ public class DQN<TPolicy> : IAgent<State, Advice>
         _lastState = state;
     }
 
-    private void CorrectQValue(State newState, float reward, bool terminal = false)
+    private void CorrectQValue(State newState, double reward, bool terminal = false)
     {
-        var correction = terminal ? reward : reward + _hyperParameters.DiscountFactor * _qApproximator.GetQValues(newState).Max();
-        _qApproximator.CorrectQValue(_lastState.Value, _adviceEnumerator[_lastAdvice.Value], correction);
+        if (_lastAdvice.HasValue)
+        {
+            var advice = _lastAdvice.Value;
+
+            var correction = terminal ? reward : reward + _hyperParameters.DiscountFactor * _qApproximator.GetQValues(newState).Max();
+            _qApproximator.CorrectQValue(_lastState.Value, _adviceEnumerator[advice], correction);
+        }        
     }
 
     public string ToJson()

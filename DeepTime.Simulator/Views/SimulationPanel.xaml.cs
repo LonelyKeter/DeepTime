@@ -13,16 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-using DeepTime.Simulator.ViewModels;
-
 namespace DeepTime.Simulator.Views
 {
     /// <summary>
-    /// Логика взаимодействия для TaskListPanel.xaml
+    /// Логика взаимодействия для SimulationPanel.xaml
     /// </summary>
-    public partial class TaskListPanel : UserControl
+    public partial class SimulationPanel : UserControl
     {
-        public TaskListPanel()
+        public SimulationPanel()
         {
             InitializeComponent();
             Loaded += (s, e) => AddCommandBindinds();
@@ -30,14 +28,8 @@ namespace DeepTime.Simulator.Views
 
         private void AddCommandBindinds()
         {
-            var taskVM = (TaskVM)DataContext;
+            var taskVM = (ViewModels.SimulationVM)DataContext;
             CommandBindings.AddRange(taskVM.CreateCommandBindings());
-        }
-
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            var listBox = sender as ListBox;
-            listBox.ScrollIntoView(listBox.SelectedItem);
         }
     }
 }

@@ -11,89 +11,135 @@ namespace DeepTime.Simulation;
 
 public class User : IUser
 {
-    private readonly Dictionary<int, Task> _tasks = new();
     private readonly Random _random = new();
-    private UserState _state = CreateInitialUserState(TimeOnly.MaxValue);
+    private UserState _state = InitialUserState;
 
     public UserConfig Config { get; init; }
     public UserState State => _state;
-    public IReadOnlyDictionary<int, Task> Tasks => _tasks;
 
-
-    public bool CanWork
-        => _state.MinutesWorked < Config.MaxWorkMinutes && _state.MinutesWorkedContiniously < Config.MaxContiniousWorkMinutes;
-    public bool WantsToWork
-        => (double)State.MinutesWorkedContiniously / Config.MaxContiniousWorkMinutes > Config.Initiativeness;
-    
+    public bool CanWork => CanWorkInState(_state);
+    public bool WantsToWork => WantsToWorkInState(_state);
 
     public User(UserConfig config)
     {
         Config = config;
     }
 
-    public UserFeedback? GetFeedback(IEnumerable<Task>? propositions, TimeOnly time)
+    public UserFeedback? GetFeedback<P, T>(P? propositions, T tasks)
+        where P : IEnumerable<Task>
+        where T : IEnumerable<Task>
     {
-        Update(time);
+        if (!CanWork) return null;
 
-        var decision = !CanWork ? null :
-            ChooseTaskFromPropositions(propositions, out var feedback) ? feedback :
-            WantsToWork ? ChooseTaskIndependently() : null;
+        if (propositions is not null && ChooseTaskFromPropositions(propositions, out var feedback))
+            return feedback;
 
-        Update(decision);
-
-        return decision;
+        return WantsToWork ? ChooseTaskIndependently(tasks) : null;
     }
 
-    public void StartDay(TimeOnly time, IEnumerable<Task> tasks)
+    public void RestFor(int minutes)
     {
-        _state = CreateInitialUserState(time);
-        InitTaskList(tasks);        
-    }
-
-    private UserFeedback? ChooseTaskIndependently() => Config.Strategy switch
-    {
-        UserStrategy.AttractiveFirst => ChooseTaskAttractiveFirst(),
-        UserStrategy.PriorFirst => ChooseTaskPriorFirst(),
-        _ => throw new InvalidOperationException("Invalid user strategy.")
-    };
-
-
-    private UserFeedback? ChooseTaskAttractiveFirst()
-    {
-        var task = _tasks.Values.Where(task => !task.Done).MaxBy(task => (int)task.Attractiveness);
-
-        return PrepareFeedback(task);
-    }
-
-    private UserFeedback? ChooseTaskPriorFirst()
-    {
-        var task = _tasks.Values.Where(task => !task.Done).MaxBy(task => (int)task.Priority);
-
-        return PrepareFeedback(task);
-    }
-
-    private bool ChooseTaskFromPropositions(IEnumerable<Task>? propositions, out UserFeedback? feedback)
-    {
-        if (propositions is null)
+        if (!_state.IsResting)
         {
-            feedback = null;
-            return false;
+            _state.LastTaskId = null;
+            _state.MinutesRested = minutes;
+            _state.MinutesWorkedOnLastTask = 0;
+            _state.MinutesWorkedContiniously = 0;
+        }
+        else
+        {
+            _state.MinutesRested += minutes;
+        }
+    }
+
+    public void DoTask(UserFeedback feedback)
+    {
+        var (taskId, minutesSpent, _, _) = feedback;
+
+        _state.MinutesWorked += minutesSpent;
+
+        if (_state.IsResting)
+        {
+            _state.LastTaskId = taskId;
+            _state.MinutesRested = 0;
+        }
+        else
+        {
+            if (taskId == _state.LastTaskId.Value)
+                _state.MinutesWorkedOnLastTask += minutesSpent;
+            else
+                _state.MinutesWorkedOnLastTask = minutesSpent;
+
+            _state.MinutesWorkedContiniously += minutesSpent;
+        }
+    }
+
+    public void StartDay(IEnumerable<Task> tasks)
+    {
+        _state = InitialUserState;
+    }
+
+    private UserFeedback? ChooseTaskIndependently<T>(T tasks)
+        where T : IEnumerable<Task>
+    {
+        return Config.Strategy switch
+        {
+            UserStrategy.AttractiveFirst => ChooseTaskAttractiveFirst(tasks),
+            UserStrategy.PriorFirst => ChooseTaskPriorFirst(tasks),
+            _ => throw new InvalidOperationException("Invalid user strategy.")
+        };
+    }
+
+
+    private UserFeedback? ChooseTaskAttractiveFirst<T>(T tasks)
+        where T : IEnumerable<Task>
+    {
+        Task? max = null;
+        var maxAttractiveness = Attractiveness.VeryLow;
+
+        foreach (var task in tasks.Where(task => !task.Done))
+        {
+            if (task.Attractiveness >= maxAttractiveness)
+            {
+                maxAttractiveness = task.Attractiveness;
+                max = task;
+            }
         }
 
-        try
-        {
-            var choice = propositions.First(prop =>
-            {
-                if (PriorityAcceptable(prop.Priority) || AttractivenessAcceptable(prop.Attractiveness))
-                    return _state.IsResting || prop.Id != _state.LastTaskId.Value || State.MinutesWorkedOnLastTask < Config.MaxMinutesOnOneTask;
-                else
-                    return Config.Initiativeness > _random.NextDouble();
-            });
+        return max.HasValue ? PrepareFeedback(max.Value) : null;
+    }
 
-            feedback = PrepareFeedback(choice);
+    private UserFeedback? ChooseTaskPriorFirst<T>(T tasks)
+        where T : IEnumerable<Task>
+    {
+        Task? max = null;
+        var maxPriority = Priority.VeryLow;
+
+        foreach (var task in tasks.Where(task => !task.Done))
+        {
+            if (task.Priority >= maxPriority)
+            {
+                maxPriority = task.Priority;
+                max = task;
+            }
+        }
+
+        return max.HasValue ? PrepareFeedback(max.Value) : null;
+    }
+
+    private bool ChooseTaskFromPropositions<P>(P propositions, out UserFeedback? feedback)
+        where P : IEnumerable<Task>
+    {
+        var choice = propositions
+            .Cast<Task?>()
+            .FirstOrDefault(prop => IsPropositonAcceptable(prop.Value));
+
+        if (choice.HasValue)
+        {
+            feedback = PrepareFeedback(choice.Value);
             return true;
         }
-        catch (InvalidOperationException)
+        else
         {
             feedback = null;
             return false;
@@ -113,104 +159,44 @@ public class User : IUser
             task.LeftEstimate
         );
 
-        var newEstimate = task.LeftEstimate;
-        var done = false;
-        if (_random.NextDouble() > Config.EstimateAccuracy)
+        var estimateIsCorrect = EstimateIsCorrect();
+
+        if (estimateIsCorrect && task.SupposedlyDone || !estimateIsCorrect && task.DoneWorkPercentage >= 85)
         {
-            if (task.LeftEstimate <= task.MinutesEstimate / 5)
-            {
-                done = true;
-            }
-            else
-            {
-                newEstimate += 10;
-            }
-        }
-
-        return new(task.Id, minutesSpent, done, newEstimate);
-    }
-
-
-    private void Update(UserFeedback? userFeedback)
-    {
-        UpdateTasks(userFeedback);
-        UpdateState(userFeedback);
-    }
-
-    private void Update(TimeOnly time)
-    {
-        //TODO: Time cycle check policy
-        if (_state.CurrentTime >= time) return;
-
-        _state.CurrentTime = time;
-
-        if (_state.IsResting)
-            _state.MinutesRested += (time - _state.RestStarted).Minutes;
-    }
-
-    private void UpdateTasks(UserFeedback? feedback)
-    {
-        if (feedback is null) return;
-
-        var value = feedback.Value;
-        var task = _tasks[value.TaskId];
-
-        _tasks[value.TaskId] = task with
-        {
-            MinutesSpent = task.MinutesSpent + value.MinutesSpent,
-            MinutesEstimate = task.MinutesEstimate + value.NewEstimate,
-            Done = task.Done,
-        };
-    }
-
-    private void UpdateState(UserFeedback? feedback)
-    {
-        //If user chose to stop doing tasks
-        if (feedback is null)
-        {
-            if (!_state.IsResting)
-            {
-                _state.LastTaskId = null;
-                _state.MinutesRested = 0;
-                _state.RestStarted = _state.CurrentTime;
-            }
+            return UserFeedback.FinishTask(task.Id, minutesSpent);
         }
         else
         {
-            var (taskId, minutesSpent, _, _) = feedback.Value;
-
-            if (_state.IsResting)
-            {
-                _state.LastTaskId = taskId;
-            }
-            else
-            {
-                if (taskId == _state.LastTaskId.Value)
-                    _state.MinutesWorkedOnLastTask += minutesSpent;
-
-                _state.MinutesWorkedContiniously += minutesSpent;
-            }
-
-            _state.MinutesWorked += minutesSpent;
+            return UserFeedback.DoTask(task.Id, minutesSpent, estimateIsCorrect ? null : task.MinutesEstimate / 5);
         }
     }
 
-    private void InitTaskList(IEnumerable<Task> tasks)
+    private bool CanWorkInState(UserState state)
+        => state.MinutesWorked < Config.MaxWorkMinutes
+        && state.MinutesWorkedContiniously < Config.MaxContiniousWorkMinutes
+        || state.IsResting
+        && state.MinutesRested >= Config.MinRest;
+
+    public bool WantsToWorkInState(UserState state)
+        => (double)state.MinutesWorkedContiniously / Config.MaxContiniousWorkMinutes <= Config.Initiativeness;
+
+    private bool IsPropositonAcceptable(Task prop)
     {
-        _tasks.Clear();
-        
-        foreach (var task in tasks)
-        {
-            _tasks.Add(task.Id, task);
-        }
+
+        if (PriorityAcceptable(prop.Priority) || AttractivenessAcceptable(prop.Attractiveness))
+            return _state.IsResting || prop.Id != _state.LastTaskId.Value || State.MinutesWorkedOnLastTask < Config.MaxMinutesOnOneTask;
+        else
+            return Config.Initiativeness > _random.NextDouble();
+
     }
 
-    private static UserState CreateInitialUserState(TimeOnly time) => new()
+    private bool EstimateIsCorrect()
+        => _random.NextDouble() <= Config.EstimateAccuracy;
+
+    private static readonly UserState InitialUserState = new()
     {
-        CurrentTime = time,
-        RestStarted = time,
         LastTaskId = null,
-        MinutesRested = int.MaxValue,
+        MinutesRested = 60,
         MinutesWorked = 0,
         MinutesWorkedContiniously = 0,
         MinutesWorkedOnLastTask = 0,
@@ -233,25 +219,24 @@ public record UserConfig(
     UserStrategy Strategy
 )
 {
-    public static readonly UserConfig Default = new UserConfig(
-            60 * 8,
-            0.7,
-            150,
-            90,
-            20,
-            0.8,
-            UserStrategy.PriorFirst
-        );
+    public static readonly UserConfig Default = new(
+            MaxWorkMinutes: 60 * 8,
+            Initiativeness: 0.3,
+            MaxContiniousWorkMinutes: 150,
+            MaxMinutesOnOneTask: 90,
+            MinRest: 20,
+            EstimateAccuracy: 0.8,
+            Strategy: UserStrategy.PriorFirst
+    );
 }
 
-public struct UserState {
+public struct UserState
+{
     public int MinutesWorked { get; internal set; }
     public int MinutesWorkedOnLastTask { get; internal set; }
     public int MinutesWorkedContiniously { get; internal set; }
     public int MinutesRested { get; internal set; }
     public int? LastTaskId { get; internal set; }
-    public TimeOnly RestStarted { get; internal set; }
-    public TimeOnly CurrentTime { get; internal set; }
 
     public bool IsResting
         => !LastTaskId.HasValue;

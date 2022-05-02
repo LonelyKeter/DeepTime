@@ -8,8 +8,8 @@ namespace DeepTime.Lib;
 
 public interface IQFunction<TState>
 {
-    float[] GetQValues(TState state);
-    void CorrectQValue(TState state, int takenAction, float correction);
+    double[] GetQValues(TState state);
+    void CorrectQValue(TState state, int takenAction, double correction);
 
     int ActionCount { get; }
 }

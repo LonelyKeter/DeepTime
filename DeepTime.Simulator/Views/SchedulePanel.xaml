@@ -5,15 +5,88 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm ="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:data="clr-namespace:DeepTime.Lib.Data;assembly=DeepTime.Lib"
              xmlns:root ="clr-namespace:DeepTime.Simulator"
+             xmlns:conv="clr-namespace:DeepTime.Simulator.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="300" d:DataContext="{d:DesignInstance root:MainVM}">
-    <StackPanel Grid.Row="0"
-                        Background="LightGray"
-                        Orientation="Horizontal"
-                        DataContext="{Binding ScheduleContext}">
-        <TextBlock Text="{Binding DayOfWeek}"/>
-        <TextBlock Text="{Binding Time}"/>
-        <TextBlock Text="{Binding IsHoliday}"/>
-    </StackPanel>
+             d:DesignHeight="40" d:DesignWidth="400" 
+             d:DataContext="{d:DesignInstance data:ScheduleContext}">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Column="0" Grid.Row="0">
+            Day:
+        </TextBlock>    
+        
+        <TextBlock Grid.Column="0" Grid.Row="1">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsHolliday, Mode=OneWay}" Value="true">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            <Run Text="{Binding DayOfWeek}"/>
+            <d:Run>
+                Saturday
+            </d:Run>
+            <Run>
+                  (holiday)
+            </Run>
+        </TextBlock>
+        
+        <TextBlock Grid.Column="0" Grid.Row="1"
+                   Text="{Binding DayOfWeek}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsHolliday}" Value="true">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <TextBlock Grid.Column="1" Grid.Row="0">
+            Current time:
+        </TextBlock>
+        <TextBlock Grid.Column="1" Grid.Row="1"
+                   Text="{Binding Time, Mode=OneWay}" d:Text="12:00"/>
+
+        <TextBlock Grid.Column="3" Grid.Row="0">
+            Bounds:
+        </TextBlock>
+        <TextBlock Grid.Column="3" Grid.Row="1"
+                   DataContext="{Binding Bounds}">
+            <Run Text="{Binding Start, Mode=OneWay}"/>
+            <d:Run Text="08:00 AM"/>
+            <Run Text="--"/>
+            <Run Text="{Binding End, Mode=OneWay}"/>
+            <d:Run Text="09:00 PM"/>
+        </TextBlock>
+    </Grid>
 </UserControl>

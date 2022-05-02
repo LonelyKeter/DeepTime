@@ -6,9 +6,12 @@
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:root ="clr-namespace:DeepTime.Simulator"
+             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
+             xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             
              mc:Ignorable="d" 
              d:DesignHeight="150" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance vm:TaskVM}">
+             d:DataContext="{d:DesignInstance vm:SimulationVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -27,8 +30,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition />
             <RowDefinition/>
         </Grid.RowDefinitions>
 
@@ -37,29 +40,41 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.ColumnSpan="2"
-               HorizontalAlignment="Center"
+        <Label Grid.Row="0" Grid.Column="0"
                FontSize="16"
                FontWeight="Bold">
             Do task:
         </Label>
-        <StackPanel Grid.Row="0" Grid.Column="1">
-            <TextBlock Text="{Binding SelectedTask.Title.Length}"/>
-            <TextBlock Text="{Binding SelectedTask.Inner.Id}"/>
-        </StackPanel>
+        
+        <TextBlock Grid.Row="0" Grid.Column="1"
+                   VerticalAlignment="Center"
+                   DataContext="{Binding TaskVM, diag:PresentationTraceSources.TraceLevel=High}">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Visible"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding SelectedIndex}" Value="-1">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+            [<Run Text="{Binding SelectedTask.Inner.Id, Mode=OneWay}"/><d:Run Text="1"/>] 
+            <Run Text="{Binding SelectedTask.Title, Mode=OneWay}"/><d:Run Text="Laundry"/>
+        </TextBlock>
 
         <Label Grid.Row="1" Grid.Column="0">
             Spend minutes:
         </Label>
-        <TextBox Grid.Row="1" Grid.Column="1" 
-                                 Text="{Binding SpendMinutes, Mode=TwoWay}"/>
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 Text="{Binding MinutesSpent}"/>
 
 
         <Label Grid.Row="2" Grid.Column="0">
             Time left:
         </Label>
-        <TextBox Grid.Row="2" Grid.Column="1" 
-                                 Text="{Binding TimeLeft, Mode=TwoWay}"/>
+        <TextBox Grid.Row="2" Grid.Column="1"
+                 Text="{Binding NewEstimate}"/>
 
         <Grid Grid.Row="3" Grid.ColumnSpan="2" Height="30">
             <Grid.ColumnDefinitions>
@@ -70,15 +85,16 @@
 
 
             <Button Grid.Column="0" 
-                                Command="{x:Static root:TestCommands.DoTask}">
+                                Command="{x:Static comm:SimulationCommands.DoTask}">
                 Do task
             </Button>
-            <Button Grid.Column="1" 
-                                Command="{x:Static root:TestCommands.FinishTask}">
-                Finish task
-            </Button>
+            <CheckBox Grid.Column="1"
+                      VerticalAlignment="Center"
+                      IsChecked="{Binding Finished}">
+                Finish
+            </CheckBox>
             <Button Grid.Column="2" 
-                                Command="{x:Static root:TestCommands.Rest}">
+                                Command="{x:Static comm:SimulationCommands.Rest}">
                 Rest
             </Button>
         </Grid>

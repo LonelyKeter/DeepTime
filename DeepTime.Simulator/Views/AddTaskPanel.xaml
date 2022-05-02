@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
-             xmlns:root ="clr-namespace:DeepTime.Simulator"
+             xmlns:comm ="clr-namespace:DeepTime.Simulator.Commands"
+             MinHeight="200" MinWidth="350"
+             
              mc:Ignorable="d" 
-             d:DesignHeight="160" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance vm:TaskVM}"
-             MinHeight="160" MinWidth="350">
+             d:DesignHeight="200" d:DesignWidth="350"
+             d:DataContext="{d:DesignInstance vm:TaskVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -33,9 +33,10 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
@@ -71,5 +72,18 @@
         </Label>
         <TextBox Grid.Row="4" Grid.Column="1" 
                                  Text="{Binding NewTaskMinuteEstimate}"/>
+
+        <Grid Grid.Row="5" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="1"
+                                Command="{x:Static comm:TaskCommands.AddTask}">
+                Add task
+            </Button>
+        </Grid>
     </Grid>
 </UserControl>

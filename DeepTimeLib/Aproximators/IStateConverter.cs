@@ -8,7 +8,7 @@ namespace DeepTime.Lib.Aproximators
 {
     public interface IStateConverter<TInput>
     {
-        float[] ToInput(TInput input);
+        double[] ToInput(TInput input);
         int InputSize { get; }
     }
 }

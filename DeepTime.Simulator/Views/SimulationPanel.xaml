@@ -1,32 +1,31 @@
-﻿<UserControl x:Class="DeepTime.Simulator.Views.UserPanel"
+﻿<UserControl x:Class="DeepTime.Simulator.Views.SimulationPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
+             
              mc:Ignorable="d" 
-             d:DesignHeight="500" d:DesignWidth="500"
-             d:DataContext="{d:DesignInstance vm:UserVM}">
+             d:DesignHeight="600" d:DesignWidth="400"
+             d:DataContext="{d:DesignInstance vm:SimulationVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
         </Style>
     </d:DesignerProperties.DesignStyle>
-    
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <local:UserConfigPanel Grid.Row="0"
-                               DataContext ="{Binding ConfigVM}"
-                               Height="300"/>
-        
-        <local:UserStatePanel Grid.Row="1"
-                              DataContext="{Binding State}"
-                              MaxHeight="150"
-                              VerticalAlignment="Center"/>
+        <local:TaskListPanel Grid.Row="0"
+                             DataContext="{Binding TaskVM}"/>
+        <local:DoTaskPanel Grid.Row="1"/>
+
+        <local:SimulationControlPanel Grid.Row="2"/>
     </Grid>
 </UserControl>

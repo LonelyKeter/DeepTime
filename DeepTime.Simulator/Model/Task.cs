@@ -14,6 +14,7 @@ namespace DeepTime.Simulator.Model;
 public class Task : INotifyPropertyChanged
 {
     private bool _proposed = false;
+    private Lib.Data.Task _inner;
 
     public string Title { get; init; }
     public bool Proposed
@@ -32,7 +33,15 @@ public class Task : INotifyPropertyChanged
         Inner = inner;
     }
 
-    public Lib.Data.Task Inner { get; init; }
+    public Lib.Data.Task Inner 
+    {
+        get => _inner;
+        set 
+        {
+            _inner = value;
+            OnPropertyChanged();
+        } 
+    }
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

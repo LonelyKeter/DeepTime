@@ -5,8 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:model="clr-namespace:DeepTime.Simulator.Model"
+             
+             Padding="8 5"
+             
              mc:Ignorable="d" 
-             d:DesignHeight="50" d:DesignWidth="300"
+             d:DesignHeight="40" d:DesignWidth="350"
              d:DataContext="{d:DesignInstance model:Task}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -22,8 +25,8 @@
     
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -33,14 +36,15 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="3">
-            [<Run Text="{Binding Inner.Id}"/>] <Run Text="{Binding Title}"/>
+            [<Run Text="{Binding Inner.Id}"/><d:Run Text="1"/>] 
+            <Run Text="{Binding Title}"/><d:Run Text="Laundry"/>
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="0">
             <Run Text="Progress: "/>
-            <Run Text="{Binding Inner.MinutesSpent}"/>
+            <Run Text="{Binding Inner.MinutesSpent}"/><d:Run Text="70"/>
             <Run Text="/"/>
-            <Run Text="{Binding Inner.MinutesEstimate}"/>
+            <Run Text="{Binding Inner.MinutesEstimate}"/><d:Run Text="120"/>
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="1">

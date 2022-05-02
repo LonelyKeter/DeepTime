@@ -6,7 +6,9 @@
              xmlns:vm ="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="100" d:DesignWidth="400"
+             MinHeight="20"
+             
+             d:DesignWidth="400"
              d:DataContext="{d:DesignInstance vm:TaskGenParametersVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -35,8 +37,8 @@
         <TextBox Grid.Column="0" Text="{Binding AverageCount, Mode=TwoWay}"/>
         <TextBox Grid.Column="1" Text="{Binding CountDeviation, Mode=TwoWay}"/>
         <ComboBox Grid.Column="2" 
-                                      ItemsSource="{Binding AttractivenessVariants}"
+                                      ItemsSource="{x:Static vm:TaskGenParametersVM.AttractivenessVariants}"
                                       SelectedValue="{Binding AverageAttractiveness, Mode=TwoWay}"/>
-        <TextBox Grid.Column="3" Text="{Binding CountDeviation, Mode=TwoWay}"/>
+        <TextBox Grid.Column="3" Text="{Binding AttractivenessDeviation, Mode=TwoWay}"/>
     </Grid>
 </UserControl>

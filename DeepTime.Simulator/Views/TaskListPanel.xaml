@@ -5,30 +5,63 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
+             
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="350"
              d:DataContext="{d:DesignInstance vm:TaskVM}">
-    <ListBox ItemsSource="{Binding Tasks}" 
-             SelectedItem="{Binding SelectedTask}" SelectionMode="Single"
-             ScrollViewer.VerticalScrollBarVisibility="Visible"
-             BorderBrush="Transparent">
-        <ListBox.ItemTemplate>
-            <DataTemplate>
-                <local:TaskListItem Height="Auto"/>
-            </DataTemplate>
-        </ListBox.ItemTemplate>
-        <ListBox.ItemContainerStyle>
-            <Style TargetType="ListBoxItem">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding Proposed}" Value="True">
-                        <Setter Property="Background" Value="Yellow"/>
-                    </DataTrigger>
-                    <DataTrigger Binding="{Binding Inner.Done}" Value="True">
-                        <Setter Property="Background" Value="Green"/>
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </ListBox.ItemContainerStyle>
-        <d:ListBoxItem Content="{d:DesignInstance local:TaskListItem}"/>
-    </ListBox>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ListBox Grid.Row="0"
+                 ItemsSource="{Binding Tasks}" 
+                 SelectedItem="{Binding SelectedTask}" 
+                 SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                 SelectionMode="Single"
+                 ScrollViewer.VerticalScrollBarVisibility="Visible"
+                 BorderBrush="Transparent"
+                 SelectionChanged="ListBox_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <local:TaskListItem Height="Auto"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="LightGray"/>
+                            <Setter Property="BorderBrush" Value="Black"/>
+                        </Trigger>
+                        <DataTrigger Binding="{Binding Proposed}" Value="True">
+                            <Setter Property="Background" Value="Yellow"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Inner.Done}" Value="True">
+                            <Setter Property="Background" Value="LightGreen"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Command="{x:Static comm:TaskCommands.DeleteTask}">
+                Delete task
+            </Button>
+            <Button Grid.Column="1"
+                    Command="{x:Static comm:TaskCommands.ClearTasks}">
+                Clear tasks
+            </Button>
+        </Grid>
+    </Grid>
 </UserControl>

@@ -4,61 +4,66 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Keras;
-
 namespace DeepTime.Lib.Aproximators;
 
 
 public class QFunctionApproximator<TState, TStateConverter> : IQFunction<TState>
-    where TStateConverter : IStateConverter<TState>
+    where TStateConverter : IStateConverter<TState>, new()
 {
-    private readonly KerasNN _model;
-    private readonly TStateConverter _stateConverter;
+    public const double DefaultLearningRate = 0.001;
+    public const int DefaultTrainingStep = 1;
+
+    private readonly NeuralApproximator _model;
+    private readonly TStateConverter _stateConverter = new();
     private readonly List<ReplayEntry> _replay = new();
 
-    private readonly int _trainingStep;
-    private readonly float _learningRate;
+    public int TrainingStep { get; set; }
+    public double LearningRate { get; set; }
 
     public int ActionCount { get; init; } 
 
     public QFunctionApproximator(
-        TStateConverter stateConverter,
         int actionCount,
-        float learningRate = 0.001f, 
-        int trainingStep = 1
+        double learningRate = DefaultLearningRate, 
+        int trainingStep = DefaultTrainingStep
     )
     {
-        _model = new KerasNN(
-            stateConverter.InputSize,
-            new int[] { stateConverter.InputSize * 2 / 3, stateConverter.InputSize * 2 / 3 },
+        var inputSize = _stateConverter.InputSize;
+
+        _model = new NeuralApproximator(
+            inputSize,
             actionCount,
-            learningRate
-        );
+            new int[]
+            {
+                inputSize * 3 / 2,
+                inputSize * 3 / 2,
+            },
+            learningRate,
+            0.1);
 
         ActionCount = actionCount;
-        _stateConverter = stateConverter;
 
-        _trainingStep = trainingStep;
-        _learningRate = learningRate;
+        TrainingStep = trainingStep;
+        LearningRate = learningRate;
     }   
 
-    public void CorrectQValue(TState state, int takenAction, float correction)
+    public void CorrectQValue(TState state, int takenAction, double correction)
     {
         AddReplay(state, takenAction, correction);
 
-        if (_replay.Count >= _trainingStep)
+        if (_replay.Count >= TrainingStep)
         {
             Train();
         }
     }
 
-    public float[] GetQValues(TState state)
+    public double[] GetQValues(TState state)
     {
         var input = _stateConverter.ToInput(state);
-        return _model.Eval(input);
+        return _model.Compute(input);
     }   
 
-    private void AddReplay(TState state, int takenAction, float reward)
+    private void AddReplay(TState state, int takenAction, double reward)
     {
         if (takenAction >= ActionCount)
             throw new ArgumentOutOfRangeException(nameof(takenAction));
@@ -70,39 +75,29 @@ public class QFunctionApproximator<TState, TStateConverter> : IQFunction<TState>
         ));
     }
 
-    private (float[], float[]) ConstructSample(ReplayEntry entry)
+    private (double[], double[]) ConstructSample(ReplayEntry entry)
     {
-        var target = _model.Eval(entry.OldState);
-        target[entry.TakenAction] = (1 - _learningRate) * target[entry.TakenAction] + _learningRate * entry.Correction;
+        var target = _model.Compute(entry.OldState);
+        target[entry.TakenAction] = (1 - LearningRate) * target[entry.TakenAction] + LearningRate * entry.Correction;
 
         return (entry.OldState, target);
     } 
 
     private void Train()
     {
-        var inputs = new float[_replay.Count, _stateConverter.InputSize];
-        var targets = new float[_replay.Count, ActionCount];
+        var inputs = new double[_replay.Count][];
+        var targets = new double[_replay.Count][];
 
         for (var index = 0; index < _replay.Count; index++)
         {
             var entry = _replay[index];
-
             var (input, target) = ConstructSample(entry);
-
-            CopyOneDToTwoD(input, inputs, index);
-            CopyOneDToTwoD(target, targets, index);
+            inputs[index] = input;
+            targets[index] = target;
         }
 
         _model.Train(inputs, targets);
     }
-
-    private static void CopyOneDToTwoD<T>(T[] source, T[,] dist, int distOffset)
-    {
-        for (var index = 0; index < source.Length; index++)
-        {
-            dist[distOffset, index] = source[index];
-        }
-    }
     
-    private record struct ReplayEntry(float[] OldState, int TakenAction, float Correction);
+    private record struct ReplayEntry(double[] OldState, int TakenAction, double Correction);
 }

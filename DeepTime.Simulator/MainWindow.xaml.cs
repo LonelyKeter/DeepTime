@@ -23,7 +23,6 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-
         this.CommandBindings.AddRange(((MainVM)DataContext).CreateCommandBindings());
     }
 }

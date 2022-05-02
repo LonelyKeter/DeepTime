@@ -11,6 +11,8 @@ namespace DeepTime.Simulator.ViewModels;
 
 public class UserConfigVM : DependencyObject
 {
+    public UserConfig UserConfig { get; private set; } = UserConfig.Default;
+
     #region Dependency properties
     public int MaxWorkMinutes
     {
@@ -72,5 +74,4 @@ public class UserConfigVM : DependencyObject
     public UserStrategy[] UserStrategies => _userStrategies;    
     #endregion
 
-    public UserConfig? UserConfig = null;
 }
