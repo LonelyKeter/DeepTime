@@ -1,35 +1,50 @@
-﻿namespace DeepTime.Simulation; 
+﻿namespace DeepTime.Simulation;
+
+using DeepTime.Advisor.Data;
+
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
 
-using DeepTime.Lib.Data;
+using static DeepTime.Advisor.Data.Types;
 
-using static DeepTime.Lib.Data.Types;
+using Formatter = System.Runtime.Serialization.Formatters.Binary.BinaryFormatter;
 
-using Task = DeepTime.Lib.Data.Task;
-
-
-public class TaskGenerator : ITaskGenerator
+[Serializable()]
+public class TaskGenerator : ITaskGenerator<Task>, RL.ISerializable<TaskGenerator>
 {
-    private readonly GenerationParameters[] _parameters = new GenerationParameters[PriorityCount];
-    private readonly Random _random = new ();
-    private int _idCounter;
+    private static readonly Formatter Formatter = new();
+    private static Random _random = new();
+
+    private GenerationParameters[] _parameters = new GenerationParameters[PriorityCount];
+
+    [NonSerialized()] private int _idCounter = 0;
 
     public int MinDuration { get; set; } = 10;
-    public int MaxDuration { get; set; } = 120;
+    public int MaxDuration { get; set; } = 50;
 
     public bool GeneratesAny() => _parameters.Select(p => p.AverageCount).Any(count => count > 0);
 
-    public GenerationParameters this[Priority priority] => _parameters[priority.AsIndex()];
+    public GenerationParameters this[Priority priority] => _parameters[priority.AsIndex()];    
 
     public TaskGenerator()
     {
         foreach (var priority in Enum.GetValues<Priority>())
         {
             _parameters[priority.AsIndex()] = new();
-        } 
+        }
+    }
+
+    public TaskGenerator(GenerationParameters[] parameters)
+    {
+        if (parameters.Length != PriorityCount)
+            throw new ArgumentException("Invalid parameters count", nameof(parameters));
+
+        foreach (var priority in Enum.GetValues<Priority>())
+        {
+            _parameters[priority.AsIndex()] = parameters[priority.AsIndex()];
+        }
     }
 
     public Task GenTask()
@@ -77,8 +92,29 @@ public class TaskGenerator : ITaskGenerator
 
     private int PickDuration()
         => (MinDuration + _random.Next(MaxDuration - MinDuration)) / 5 * 5;
+
+    public static TaskGenerator Deserialize(Stream stream)
+    {
+        return (TaskGenerator)Formatter.Deserialize(stream);
+    }
+
+    public void LoadFrom(Stream stream)
+    {
+        var instance = Deserialize(stream);
+
+        _parameters = instance._parameters;
+        MinDuration = instance.MinDuration;
+        MaxDuration = instance.MaxDuration;
+    }
+
+    public void Serialize(Stream stream)
+    {
+        Formatter.Serialize(stream, this);
+    }
 }
 
+
+[Serializable()]
 public class GenerationParameters
 {
     public int AverageCount { get; set; } = 3;

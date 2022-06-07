@@ -5,10 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             
              mc:Ignorable="d" 
              d:DesignHeight="360" d:DesignWidth="450"
              MinWidth="450" MinHeight="360"
-             d:DataContext="{d:DesignInstance vm:UserConfigVM}">
+             d:DataContext="{d:DesignInstance vm:UserConfigVM}"
+             IsEnabled="{Binding Enabled}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -43,7 +45,7 @@
             <RowDefinition/>
             <RowDefinition/>
             <RowDefinition/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" 
@@ -128,7 +130,7 @@
                 </TextBlock>
             </Label>
             <TextBox Grid.Column="1"
-                     Text="{Binding MinRest, Mode=TwoWay}"/>
+                     Text="{Binding EstimateAccuracy, Mode=TwoWay}"/>
 
             <Label Grid.Column="2">
                 <TextBlock>
@@ -136,8 +138,24 @@
                 </TextBlock>
             </Label>
             <ComboBox Grid.Column="3"
-                      SelectedItem="{Binding UserStrategy, Mode=TwoWay}"
+                      SelectedItem="{Binding Strategy, Mode=TwoWay}"
                       ItemsSource="{Binding UserStrategies}"/>
+        </Grid>
+
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Command="{Binding LoadCommand}">
+                Open config
+            </Button>
+            <Button Grid.Column="1"
+                    Command="{Binding SaveCommand}">
+                Save config
+            </Button>
         </Grid>
     </Grid>
 </UserControl>

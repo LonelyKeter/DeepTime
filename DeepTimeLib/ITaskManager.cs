@@ -1,28 +1,28 @@
-﻿
-namespace DeepTime.Lib;
+﻿namespace DeepTime.Advisor;
 
-using System.Collections.Generic;
 using Data;
 
-using Task = Data.Task;
+using System.Collections.Generic;
 
-public interface ITaskManager : IEnumerable<Task>
+public interface ITaskManager<TTask> : IEnumerable<TTask> where TTask : ITask
 {
-    Task this[int id] { get; }
-    IReadOnlyList<Task> this[Priority pr, Attractiveness attr] { get; }
+    int Count { get; }
 
-    IEnumerable<Task> GetUndone();
-    IEnumerable<Task> GetUndone(Priority pr, Attractiveness attr);
+    TTask this[int id] { get; }
+    IReadOnlyList<TTask> this[Priority pr, Attractiveness attr] { get; }
 
-    IEnumerable<Task> GetDone();
-    IEnumerable<Task> GetDone(Priority pr, Attractiveness attr);
+    IEnumerable<TTask> GetUndone();
+    IEnumerable<TTask> GetUndone(Priority pr, Attractiveness attr);
 
-    void Add(Task task);
-    void Remove(int id);
+    IEnumerable<TTask> GetDone();
+    IEnumerable<TTask> GetDone(Priority pr, Attractiveness attr);
+
+    void Add(TTask task);
+    TTask Remove(int id);
 
     void SubmitProgress(int id, int minutesSpent, int? minutesLeft);
     void MarkAsDone(int id, int minutesSpent);
 
     bool Contains(int id);
-    void Clear();
+    IEnumerable<TTask> Clear();
 }

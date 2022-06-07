@@ -5,12 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DeepTime.Simulator"
         xmlns:v ="clr-namespace:DeepTime.Simulator.Views"
+        xmlns:vm ="clr-namespace:DeepTime.Simulator.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="950"
+        Title="MainWindow" Height="700" Width="970"
         MinWidth="777" MinHeight="300">
-    <Window.DataContext>
-        <local:MainVM/>
-    </Window.DataContext>
 
     <Window.Resources>
         <Style TargetType="Button">
@@ -30,8 +28,7 @@
             <ColumnDefinition Width="*" MinWidth="450"/>
         </Grid.ColumnDefinitions>
 
-        <v:SimulationPanel Grid.Column="0"
-                           DataContext="{Binding SimulationVM}"/>
+        <v:SimulationPanel Grid.Column="0"/>
 
         <GridSplitter Grid.Column="1" 
                       Width="5"
@@ -42,15 +39,40 @@
             <TabItem Header="Tasks">
                 <ScrollViewer HorizontalAlignment="Center"
                           HorizontalScrollBarVisibility="Auto">
-                    <v:TaskPanel DataContext="{Binding TaskVM}"/>
+                    <v:TaskPanel/>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="User">
                 <ScrollViewer HorizontalAlignment="Center" 
                           HorizontalScrollBarVisibility="Auto">
-                    <v:UserPanel                       
-                         DataContext="{Binding UserVM}"/>
+                    <v:UserPanel/>
                 </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Statistics">
+                <ScrollViewer HorizontalAlignment="Center" 
+                          HorizontalScrollBarVisibility="Auto">
+                    <v:StatisticsPanel
+                        MaxHeight="700"/>
+                </ScrollViewer>
+            </TabItem>
+            <TabItem Header="Agent">
+                <Grid>
+                    <Border>
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger 
+                                        Binding="{Binding AgentType}" 
+                                        Value="{x:Static vm:SimulationControlVM.DQNKey}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <v:DQNPanel/>
+                    </Border>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

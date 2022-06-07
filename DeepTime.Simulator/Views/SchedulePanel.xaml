@@ -3,11 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
-             xmlns:vm ="clr-namespace:DeepTime.Simulator.ViewModels"
-             xmlns:data="clr-namespace:DeepTime.Lib.Data;assembly=DeepTime.Lib"
-             xmlns:root ="clr-namespace:DeepTime.Simulator"
-             xmlns:conv="clr-namespace:DeepTime.Simulator.Converters"
+             xmlns:data="clr-namespace:DeepTime.Advisor.Data;assembly=DeepTime.Advisor"
              mc:Ignorable="d" 
              d:DesignHeight="40" d:DesignWidth="400" 
              d:DataContext="{d:DesignInstance data:ScheduleContext}">

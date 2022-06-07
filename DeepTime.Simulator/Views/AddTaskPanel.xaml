@@ -4,12 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
-             xmlns:comm ="clr-namespace:DeepTime.Simulator.Commands"
              MinHeight="200" MinWidth="350"
+             IsEnabled="{Binding Enabled}"
              
              mc:Ignorable="d" 
              d:DesignHeight="200" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance vm:TaskVM}">
+             d:DataContext="{d:DesignInstance vm:AddTaskVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -51,27 +51,27 @@
             Title:
         </Label>
         <TextBox Grid.Row="1" Grid.Column="1" 
-                                 Text="{Binding NewTaskTitle}"/>
+                                 Text="{Binding Title}"/>
 
         <Label Grid.Row="2" Grid.Column="0">
             Priority:
         </Label>
         <ComboBox Grid.Row="2" Grid.Column="1" 
-                                      ItemsSource="{Binding PriorityVariants}"
-                                      SelectedValue="{Binding NewTaskPriority}"/>
+                                      ItemsSource="{x:Static vm:AddTaskVM.PriorityVariants}"
+                                      SelectedValue="{Binding Priority}"/>
 
         <Label Grid.Row="3" Grid.Column="0">
             Attractiveness:
         </Label>
         <ComboBox Grid.Row="3" Grid.Column="1" 
-                                      ItemsSource="{Binding AttractivenessVariants}"
-                                      SelectedValue="{Binding NewTaskAttractiveness}"/>
+                                      ItemsSource="{x:Static vm:AddTaskVM.AttractivenessVariants}"
+                                      SelectedValue="{Binding Attractiveness}"/>
 
         <Label Grid.Row="4" Grid.Column="0">
             Minutes estimate:
         </Label>
         <TextBox Grid.Row="4" Grid.Column="1" 
-                                 Text="{Binding NewTaskMinuteEstimate}"/>
+                                 Text="{Binding MinutesEstimate}"/>
 
         <Grid Grid.Row="5" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
@@ -81,7 +81,7 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="1"
-                                Command="{x:Static comm:TaskCommands.AddTask}">
+                                Command="{Binding AddCommand}">
                 Add task
             </Button>
         </Grid>

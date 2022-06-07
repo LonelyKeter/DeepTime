@@ -1,6 +1,7 @@
 ﻿namespace DeepTime.Simulation;
 
-using DeepTime.Lib;
+using DeepTime.Advisor;
+
 public interface ISimulatedScheduleSource: IScheduleSource
 {
     TimeOnly CurrentTime { get; }

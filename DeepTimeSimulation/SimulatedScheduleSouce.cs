@@ -1,12 +1,6 @@
-﻿using DeepTime.Lib.Data;
+﻿namespace DeepTime.Simulation;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DeepTime.Simulation;
+using DeepTime.Advisor.Data;
 
 public class SimulatedScheduleSouce : ISimulatedScheduleSource
 {
@@ -38,7 +32,7 @@ public class SimulatedScheduleSouce : ISimulatedScheduleSource
 
     public void StartNextDay()
     {
-        if(CurrentTime >= Start)
+        if (CurrentTime >= Start)
         {
             IncrementDay();
         }

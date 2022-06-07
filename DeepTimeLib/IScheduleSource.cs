@@ -1,4 +1,4 @@
-﻿namespace DeepTime.Lib;
+﻿namespace DeepTime.Advisor;
 
 public interface IScheduleSource
 {

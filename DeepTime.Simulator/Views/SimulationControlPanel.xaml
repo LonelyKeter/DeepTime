@@ -6,13 +6,12 @@
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:root ="clr-namespace:DeepTime.Simulator"
-             xmlns:comm ="clr-namespace:DeepTime.Simulator.Commands"
              
              MinHeight="80" MinWidth="300"
              
              mc:Ignorable="d" 
              d:DesignHeight="80" d:DesignWidth="300"
-             d:DataContext="{d:DesignInstance vm:SimulationVM}">
+             d:DataContext="{d:DesignInstance vm:SimulationControlVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -22,24 +21,47 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <local:SchedulePanel DataContext="{Binding ScheduleContext}"/>
 
-        <Grid Grid.Row="1">
+        <ComboBox Grid.Row="1"
+                  Width="Auto"
+                  IsEnabled="{Binding CanChangeAgentType}"
+                  ItemsSource="{Binding AvailableAgents, Mode=OneTime}"
+                  SelectedItem="{Binding AgentType, Mode=TwoWay}"/>
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0"
-                    Command="{x:Static comm:SimulationCommands.StartDay}">
+                    Command="{Binding StartDayCommand}">
                 Start day
             </Button>
             <Button Grid.Column="1"
-                    Command="{x:Static comm:SimulationCommands.FinishDay}">
+                    Command="{Binding FinishDayCommand}">
                 Finish day
             </Button>
+            <Button Grid.Column="2"
+                    Command="{Binding StepForwardCommand}">
+                Procede
+            </Button>
+            <Button Grid.Column="3"
+                    Command="{Binding SimulateDaysCommand}">
+                Simulate
+            </Button>
+            <TextBox Grid.Column="4"
+                     Text="{Binding DaysToSimulate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Height="24"
+                     FontSize="16"
+                     TextAlignment="Center"/>
         </Grid>
     </Grid>
 </UserControl>

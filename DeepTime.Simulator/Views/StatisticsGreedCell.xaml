@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.StatisticsGreedCell"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:stat="clr-namespace:DeepTime.Advisor.Statistics;assembly=DeepTime.Advisor"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="70"
+             d:DataContext="{d:DesignInstance stat:TaskEntry}">
+    <TextBlock
+        HorizontalAlignment="Center">
+        <Run Text="{Binding Done,Mode=OneTime}"
+             Foreground="DarkOliveGreen"/>
+        /
+        <Run Text="{Binding Todo,Mode=OneTime}"
+             Foreground="Black"/>
+    </TextBlock>
+</UserControl>

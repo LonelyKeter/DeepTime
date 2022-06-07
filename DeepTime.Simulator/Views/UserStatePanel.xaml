@@ -3,13 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
-             xmlns:sim="clr-namespace:DeepTime.Simulation;assembly=DeepTime.Simulation"
              xmlns:conv="clr-namespace:DeepTime.Simulator.Converters"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="130" d:DesignWidth="300"
              MinHeight="130" MinWidth="300"
-             d:DataContext="{d:DesignInstance sim:UserState}">
+             d:DataContext="{d:DesignInstance vm:UserStateVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -41,7 +40,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Visible"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsResting}" Value="True">
+                        <DataTrigger Binding="{Binding State.IsResting}" Value="True">
                             <Setter Property="Visibility" Value="Collapsed"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -65,7 +64,7 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="0"
-                   Content="{Binding MinutesWorked}"
+                   Content="{Binding State.MinutesWorked}"
                    d:Content="75"/>
 
             <Label Grid.Row="0" Grid.Column="1">
@@ -74,7 +73,7 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="1"
-                   Content="{Binding MinutesWorkedContiniously}"
+                   Content="{Binding State.MinutesWorkedContiniously}"
                    d:Content="60"/>
 
             <Label Grid.Row="0" Grid.Column="2">
@@ -83,7 +82,7 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="2"
-                   Content="{Binding MinutesWorked}"
+                   Content="{Binding State.MinutesWorkedOnLastTask}"
                    d:Content="40"/>
         </Grid>
 
@@ -92,7 +91,7 @@
                 <Style TargetType="Grid">
                     <Setter Property="Visibility" Value="Collapsed"/>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsResting}" Value="True">
+                        <DataTrigger Binding="{Binding State.IsResting}" Value="True">
                             <Setter Property="Visibility" Value="Visible"/>
                         </DataTrigger>
                     </Style.Triggers>
@@ -115,7 +114,7 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="0"
-                   Content="{Binding MinutesRested}"
+                   Content="{Binding State.MinutesRested}"
                    d:Content="0"/>
 
             <Label Grid.Row="0" Grid.Column="1">
@@ -124,7 +123,7 @@
                 </TextBlock>
             </Label>
             <Label Grid.Row="1" Grid.Column="1"
-                   Content="{Binding IsResting}"
+                   Content="{Binding State.IsResting}"
                    d:Content="False"/>
         </Grid>
     </Grid>

@@ -5,11 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
-             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
              
              mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="400"
-             d:DataContext="{d:DesignInstance vm:SimulationVM}">
+             d:DesignHeight="600" d:DesignWidth="400">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -22,8 +20,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <local:TaskListPanel Grid.Row="0"
-                             DataContext="{Binding TaskVM}"/>
+        <local:TaskListPanel Grid.Row="0"/>
         <local:DoTaskPanel Grid.Row="1"/>
 
         <local:SimulationControlPanel Grid.Row="2"/>

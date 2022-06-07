@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DeepTime.Simulator.ViewModels;
 
-using DeepTime.Lib.Data;
+using Advisor.Data;
 
-using DeepTime.Simulation;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace DeepTime.Simulator.ViewModels;
+using Simulation;
 
-public class TaskGenParametersVM
+using System;
+using System.ComponentModel.DataAnnotations;
+
+
+public class TaskGenParametersVM : ObservableObject
 {
     public static readonly Attractiveness[] AttractivenessVariants = Enum.GetValues<Attractiveness>();
-    
+
     private readonly GenerationParameters _parameters;
 
     public TaskGenParametersVM(GenerationParameters parameters)
@@ -21,23 +21,34 @@ public class TaskGenParametersVM
         _parameters = parameters;
     }
 
-    public int AverageCount { 
-        get => _parameters.AverageCount; 
-        set => _parameters.AverageCount = value; 
+    [Required]
+    [Range(0, int.MaxValue)]
+    public int AverageCount
+    {
+        get => _parameters.AverageCount;
+        set => SetProperty(_parameters.AverageCount, value, _parameters, (m, v) => m.AverageCount = v);
     }
+
+    [Required]
+    [Range(0, int.MaxValue)]
     public int CountDeviation
     {
         get => _parameters.CountDeviation;
-        set => _parameters.CountDeviation= value;
+        set => SetProperty(_parameters.CountDeviation, value, _parameters, (m, v) => m.CountDeviation = v);
     }
+
+    [Required]
     public Attractiveness AverageAttractiveness
     {
         get => _parameters.AverageAttractiveness;
-        set => _parameters.AverageAttractiveness= value;
+        set => SetProperty(_parameters.AverageAttractiveness, value, _parameters, (m, v) => m.AverageAttractiveness = v);
     }
+
+    [Required]
+    [Range(0, int.MaxValue)]
     public int AttractivenessDeviation
     {
         get => _parameters.AttractivenessDeviation;
-        set => _parameters.AttractivenessDeviation = value;
+        set => SetProperty(_parameters.AttractivenessDeviation, value, _parameters, (m, v) => m.AttractivenessDeviation = v);
     }
 }

@@ -13,16 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DeepTime.Simulator.Views
+namespace DeepTime.Simulator.Views;
+
+
+using CommunityToolkit.Mvvm.DependencyInjection;
+
+using Simulator.ViewModels;
+
+/// <summary>
+/// Логика взаимодействия для SimulationControlPanel.xaml
+/// </summary>
+public partial class SimulationControlPanel : UserControl
 {
-    /// <summary>
-    /// Логика взаимодействия для SimulationControlPanel.xaml
-    /// </summary>
-    public partial class SimulationControlPanel : UserControl
+    public SimulationControlPanel()
     {
-        public SimulationControlPanel()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = Ioc.Default.GetRequiredService<SimulationControlVM>();
     }
 }

@@ -1,18 +1,19 @@
 ﻿namespace DeepTime.Simulation;
-using DeepTime.Lib.Data;
 
-public interface ITaskGenerator
+using DeepTime.Advisor.Data;
+
+public interface ITaskGenerator<TTask> where TTask: ITask
 {
-    Task GenTask();
-    Task GenTask(Priority priority, Attractiveness attractiveness);
-    Task GenTask(Priority priority, Attractiveness attractiveness, int minutesEstimate);
-    IEnumerable<Task> GenTasks(int count)
+    TTask GenTask();
+    TTask GenTask(Priority priority, Attractiveness attractiveness);
+    TTask GenTask(Priority priority, Attractiveness attractiveness, int minutesEstimate);
+    IEnumerable<TTask> GenTasks(int count)
     {
         for (var i = 0; i < count; i++)
             yield return GenTask();
     }
 
-    IEnumerable<Task> GenDay();
+    IEnumerable<TTask> GenDay();
 
     void ResetCounter();
 

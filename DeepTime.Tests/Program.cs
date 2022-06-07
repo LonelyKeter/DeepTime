@@ -4,16 +4,19 @@ using DeepTime.Lib.Data;
 using DeepTime.Lib.Policies;
 using DeepTime.Lib;
 
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using DeepTime.Simulation;
 
-var dqn = new DQN<EpsilonGreedy<State>>(
-    new EpsilonGreedy<State>(0.05), 
-    new QFunctionApproximator<State, StateConverter>(
-        new StateConverter(), 
-        new AdviceEnumerator().EnumCount
-    ), 
-    new HyperParameters(0.01f, 0.5f)
-);
 
-Console.WriteLine(JsonSerializer.Serialize<DQN<EpsilonGreedy<State>>>(dqn));
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+
+var gen = new User(UserConfig.Default);
+
+var stream = new MemoryStream(256);
+var formatter = new BinaryFormatter();
+
+gen.Serialize(stream);
+stream.Position = 0;
+var deserialized = User.Deserialize(stream);
+var a = 0;

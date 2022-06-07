@@ -1,92 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections;
-using System.Linq;
-using System.Text;
+﻿namespace DeepTime.Simulator.ViewModels;
 
-using System.Collections.ObjectModel;
-using System.Windows;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+
+using Simulator.Messages;
+using Simulator.Services;
+
 using System.Windows.Input;
 
-using DeepTime.Simulator.Model;
-using DeepTime.Simulator.ViewModels;
-using DeepTime.Simulator.Commands;
 
-using DeepTime.Lib;
-using DeepTime.Lib.Data;
-using DeepTime.Lib.Agents;
-using DeepTime.Lib.Policies;
-using DeepTime.Lib.Aproximators;
-using DeepTime.Simulation;
-
-using static DeepTime.Simulator.ViewModels.ViewModel;
-
-namespace DeepTime.Simulator.ViewModels;
-
-public class DQNVM: DependencyObject
+public partial class DQNVM: ObservableObject,
+    IRecipient<DQNLoadedMessage>
 {
-    private SoftMax<State> _policy = new(1.0);
+    private readonly DQNService _DQNService;
+    public IMessenger Messenger { get; }
 
-    public QApproximatorVM QApproximatorVM { get; } = new();
-
-    public DQN<SoftMax<State>> Agent { get; set; }
-
-    public DQNVM()
+    public DQNVM(DQNService service, IMessenger messenger)
     {
-        Agent = new(_policy, QApproximatorVM.QFunction, new(0.7f, 0.999f));
+        _DQNService = service;
+        Messenger = messenger;
+
+        Messenger.RegisterAll(this);
     }
 
-    #region Dependency props
-    public double SoftMaxTemperature
+    [ICommand]
+    public void Load()
     {
-        get => (double)GetValue(SoftMaxTemperatureProperty);
-        set { 
-            SetValue(SoftMaxTemperatureProperty, value); 
-            _policy.Temperature = value;
-        }
+        _DQNService.Load();
     }
-    public static readonly DependencyProperty SoftMaxTemperatureProperty =
-        DependencyProperty.Register(
-            "SoftMaxTemperature",
-            typeof(double),
-            typeof(DQNVM),
-            new PropertyMetadata(1.0)
-        );
 
-    public float LearningRate
+    [ICommand]
+    public void Save()
     {
-        get => (float)GetValue(LearningRateProperty);
-        set
-        {
-            SetValue(LearningRateProperty, value);
-            Agent.SetLearningRate(value);
-        }
+        _DQNService.Save();
     }
-    public static readonly DependencyProperty LearningRateProperty =
-        DependencyProperty.Register(
-            "LearningRate",
-            typeof(float),
-            typeof(DQNVM),
-            new PropertyMetadata(0.7f)
-        );
 
-
-
-    public float DiscountFactor
+    public void Receive(DQNLoadedMessage message)
     {
-        get => (float)GetValue(DiscountFactorProperty);
-        set
-        {
-            SetValue(DiscountFactorProperty, value);
-            Agent.SetDiscountFactor(value);
-        }
+        
     }
-    public static readonly DependencyProperty DiscountFactorProperty =
-        DependencyProperty.Register(
-            "DiscountFactor",
-            typeof(float),
-            typeof(DQNVM),
-            new PropertyMetadata(0.999f)
-        );
-    #endregion
 }

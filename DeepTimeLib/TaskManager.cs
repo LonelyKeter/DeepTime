@@ -1,23 +1,21 @@
-﻿using System;
+﻿using DeepTime.Advisor.Data;
+
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-using DeepTime.Lib.Data;
-using static DeepTime.Lib.Data.Types;
-using Task = DeepTime.Lib.Data.Task;
+using static DeepTime.Advisor.Data.Types;
 
-namespace DeepTime.Lib;
+namespace DeepTime.Advisor;
 
-public class TaskManager : ITaskManager
+public class TaskManager<TTask> : ITaskManager<TTask> where TTask : ITask
 {
-    private readonly Dictionary<int, Task> _taskDictionary = new();
-    private readonly List<Task>[,] _taskTable;
+    private Dictionary<int, TTask> _taskDictionary = new();
+    private readonly List<TTask>[,] _taskTable;
+
+    public int Count => _taskDictionary.Count;
 
     public TaskManager()
     {
-        _taskTable = new List<Task>[PriorityCount, AttractivenessCount];
+        _taskTable = new List<TTask>[PriorityCount, AttractivenessCount];
 
         for (var p = 0; p < PriorityCount; p++)
             for (var a = 0; a < AttractivenessCount; a++)
@@ -26,34 +24,47 @@ public class TaskManager : ITaskManager
             }
     }
 
-    public Task this[int id] => _taskDictionary[id];
-    public IReadOnlyList<Task> this[Priority pr, Attractiveness attr] => Get(pr, attr);
+    public TTask this[int id] => _taskDictionary[id];
+    public IReadOnlyList<TTask> this[Priority pr, Attractiveness attr] => Get(pr, attr);
 
-    public IEnumerable<Task> GetUndone()
+    public IEnumerable<TTask> GetUndone()
         => _taskDictionary.Values.Where(task => !task.Done);
 
-    public IEnumerable<Task> GetUndone(Priority pr, Attractiveness attr)
+    public IEnumerable<TTask> GetUndone(Priority pr, Attractiveness attr)
         => Get(pr, attr).Where(task => !task.Done);
 
-    public IEnumerable<Task> GetDone()
+    public IEnumerable<TTask> GetDone()
         => _taskDictionary.Values.Where(task => task.Done);
 
-    public IEnumerable<Task> GetDone(Priority pr, Attractiveness attr)
+    public IEnumerable<TTask> GetDone(Priority pr, Attractiveness attr)
         => Get(pr, attr).Where(task => task.Done);
 
-    public void Add(Task task)
+    public void Add(TTask task)
     {
         _taskDictionary.Add(task.Id, task);
-        Get(task.Priority, task.Attractiveness).Add(task); 
+        Get(task.Priority, task.Attractiveness).Add(task);
     }
 
-    public void Remove(int id)
+    public TTask Remove(int id)
     {
         _taskDictionary.Remove(id, out var task);
         Get(task.Priority, task.Attractiveness).Remove(task);
+
+        return task;
     }
 
-    public void Clear() => _taskDictionary.Clear();
+    public IEnumerable<TTask> Clear()
+    {
+        var cleared = _taskDictionary.Values;
+        _taskDictionary = new();
+
+        foreach (var list in _taskTable)
+        {
+            list.Clear();
+        }
+
+        return cleared;
+    }
     public bool Contains(int id) => _taskDictionary.ContainsKey(id);
 
     public void SubmitProgress(int id, int minutesSpent, int? minutesLeft)
@@ -78,12 +89,12 @@ public class TaskManager : ITaskManager
         _taskDictionary[id] = task;
     }
 
-    public IEnumerator<Task> GetEnumerator()
+    public IEnumerator<TTask> GetEnumerator()
         => _taskDictionary.Values.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
         => GetEnumerator();
 
-    private List<Task> Get(Priority pr, Attractiveness attr) 
+    private List<TTask> Get(Priority pr, Attractiveness attr)
         => _taskTable[pr.AsIndex(), attr.AsIndex()];
 }

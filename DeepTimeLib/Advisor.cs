@@ -1,66 +1,116 @@
-﻿using DeepTime.Lib.Data;
+﻿namespace DeepTime.Advisor;
 
-using Task = DeepTime.Lib.Data.Task;
-using static DeepTime.Lib.Data.Types;
-namespace DeepTime.Lib;
+using DeepTime.Advisor.Data;
+using DeepTime.Advisor.Statistics;
 
-public class Advisor<TAgent, TScheduleSource>
-    where TAgent : IAgent<State, Advice>
-    where TScheduleSource : IScheduleSource
+using DeepTime.RL;
+
+using static DeepTime.Advisor.Data.Types;
+
+public class Advisor<TTask> where TTask : ITask
 {
-    private readonly TScheduleSource _scheduleSource;
+    private readonly IScheduleSource _scheduleSource;
     private readonly AdvisorConfig _config;
-    public TAgent Agent { get; set; }
 
-    public Advisor(TAgent agent, TScheduleSource scheduleSource, AdvisorConfig config)
+    public static readonly int StateVecLength = StateConverter.InputSize;
+    public static readonly int ActionCount = AdviceEnumerator.EnumCount;
+
+    private IAgent _agent;
+    public IAgent Agent { 
+        get => _agent;
+        set
+        {
+            _agent = value;
+        }
+    }
+    public IStatistics Statistics { get; } = new Statistics.Statistics();
+
+    public Advisor(
+        IAgent agent, 
+        IScheduleSource scheduleSource, 
+        AdvisorConfig config)
     {
-        Agent = agent;
+        _agent = agent;
         _scheduleSource = scheduleSource;
         _config = config;
     }
 
-    public IEnumerable<Task>? GetAdvice<T>(T tasks) where T: ITaskManager
+    public IEnumerable<TTask>? GetAdvice<T>(T tasks) where T: ITaskManager<TTask>
     {
         var state = CollectCurrentState(tasks);
-        var action = GetNextAction(state, 0.0f);
+        var stateVec = StateConverter.ToVector(state);
+        var action = GetNextAction(stateVec, 0.0f);
 
         //CARE: Can loop if agent wont advise rest or valid task list
         while (!action.Rest && !tasks.GetUndone(action.Priority, action.Attractiveness).Any())
         {
-            action = GetNextAction(state, -1.0f);
+            action = GetNextAction(stateVec, -1.0f);
         }
 
         return !action.Rest ? tasks.GetUndone(action.Priority, action.Attractiveness) : null;
     }
 
-    public void StartDay<T>(T tasks) where T : ITaskManager
-        => Agent.StartEpisode(CollectCurrentState(tasks));
+    public void StartDay<T>(T tasks) where T : ITaskManager<TTask>
+        => Agent.StartEpisode(
+                StateConverter.ToVector(
+                    CollectCurrentState(tasks)
+                )
+           );
 
-    public void FinishDay<T>(T tasks) where T : ITaskManager
-        => Agent.EndEpisode(CollectCurrentState(tasks), CalculateEpisodeReward(tasks));
-
-    private Advice GetNextAction(State state, double reward)
+    public StatisticsEntry FinishDay<T>(T tasks) where T : ITaskManager<TTask>
     {
-        Agent.SetNext(state, reward);
-        return Agent.Eval();
+        var state = CollectCurrentState(tasks);
+        var vec = StateConverter.ToVector(state);
+        var progress = CountTasks(tasks);
+        var reward = CalculateEpisodeReward(progress);
+
+        Agent.EndEpisode(vec, reward);
+
+        var entry = new StatisticsEntry(progress, reward);
+        Statistics.Submit(entry);
+        return entry;
     }
 
-    private State CollectCurrentState<T>(T tasks) where T : ITaskManager
+    private Advice GetNextAction(double[] state, double reward)
     {
-        var todo = WorkloadContext.GetTodo(tasks);
-        var done = WorkloadContext.GetDone(tasks);
+        Agent.SetNext(state, reward);
+        return AdviceEnumerator.GetValue(Agent.Eval());
+    }
 
+    private State CollectCurrentState<T>(T tasks) where T : ITaskManager<TTask>
+    {
+        var (todo, done) = WorkloadContext.GetTodoAndDone<T, TTask>(tasks);
         var scheduleContext = _scheduleSource.GetCurrent();
 
         return new State(todo, done, scheduleContext);
     }    
 
-    private double CalculateEpisodeReward<T>(T tasks) where T : ITaskManager
+    private double CalculateEpisodeReward(TaskEntry[] tasks) 
     {
-        return tasks.Select(task => task.Done ? 
-            _config.ComplitionRewards[task.Priority.AsIndex()] : 
-            _config.FailurePenalties[task.Priority.AsIndex()]
-        ).Sum();
+        var reward = 0.0;
+
+        foreach (var pr in PriorityValues)
+        {
+            var (done, overall) = tasks[pr.AsIndex()];
+
+            reward += done * _config.ComplitionRewards[pr.AsIndex()];
+            reward += (overall - done) * _config.FailurePenalties[pr.AsIndex()];
+        }
+
+        return reward;
+    }    
+
+    private static TaskEntry[] CountTasks<T>(T tasks) where T : ITaskManager<TTask>
+    {
+        var result = new TaskEntry[PriorityCount];
+
+        foreach (var task in tasks)
+        {
+            result[task.Priority.AsIndex()].Done += task.Done ? 1 : 0;
+            result[task.Priority.AsIndex()].Todo++;
+        }
+
+        return result;
     }
 }
 

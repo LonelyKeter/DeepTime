@@ -6,12 +6,10 @@
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:root ="clr-namespace:DeepTime.Simulator"
-             xmlns:comm ="clr-namespace:DeepTime.Simulator.Commands"
              MinWidth="420" MinHeight="620"
              
              mc:Ignorable="d" 
-             d:DesignHeight="610" d:DesignWidth="420"
-             d:DataContext="{d:DesignInstance vm:TaskVM}">
+             d:DesignHeight="610" d:DesignWidth="420">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -23,8 +21,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <local:TaskGeneratorPanel Grid.Row="0"
-                                  DataContext="{Binding TaskGeneratorVM}"/>
+        <local:TaskGeneratorPanel Grid.Row="0"/>
         <local:AddTaskPanel Grid.Row="1" Margin="10 5"/>
     </Grid>
 </UserControl>

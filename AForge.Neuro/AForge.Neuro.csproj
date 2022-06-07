@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platforms>AnyCPU;x64</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AForge.Genetic\AForge.Genetic.csproj" />
+    <ProjectReference Include="..\AForge.Math\AForge.Math.csproj" />
+    <ProjectReference Include="..\AForge\AForge.csproj" />
+  </ItemGroup>
+
+</Project>

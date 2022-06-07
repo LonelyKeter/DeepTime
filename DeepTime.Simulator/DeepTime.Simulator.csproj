@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net6.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<PlatformTarget>x64</PlatformTarget>
+		<EnablePreviewFeatures>true</EnablePreviewFeatures>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DeepTimeLib\DeepTime.Lib.csproj" />
-    <ProjectReference Include="..\DeepTimeSimulation\DeepTime.Simulation.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
+	  <PackageReference Include="LiveChartsCore" Version="2.0.0-beta.300" />
+	  <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.300" />
+	  <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+	</ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\DeepTimeLib\DeepTime.Advisor.csproj" />
+		<ProjectReference Include="..\DeepTimeSimulation\DeepTime.Simulation.csproj" />
+	</ItemGroup>
 </Project>

@@ -6,12 +6,13 @@
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:root ="clr-namespace:DeepTime.Simulator"
-             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
              xmlns:diag="clr-namespace:System.Diagnostics;assembly=WindowsBase"
+             
+             IsEnabled="{Binding Enabled}"
              
              mc:Ignorable="d" 
              d:DesignHeight="150" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance vm:SimulationVM}">
+             d:DataContext="{d:DesignInstance vm:DoTaskVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -26,6 +27,16 @@
             <Setter Property="Height" Value="30"/>
         </Style>
     </UserControl.Resources>
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Setter Property="Visibility" Value="Hidden"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Available}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
     
     <Grid>
         <Grid.RowDefinitions>
@@ -40,28 +51,34 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
-        <Label Grid.Row="0" Grid.Column="0"
-               FontSize="16"
-               FontWeight="Bold">
-            Do task:
-        </Label>
-        
-        <TextBlock Grid.Row="0" Grid.Column="1"
-                   VerticalAlignment="Center"
-                   DataContext="{Binding TaskVM, diag:PresentationTraceSources.TraceLevel=High}">
-            <TextBlock.Style>
-                <Style TargetType="TextBlock">
-                    <Setter Property="Visibility" Value="Visible"/>
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding SelectedIndex}" Value="-1">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBlock.Style>
-            [<Run Text="{Binding SelectedTask.Inner.Id, Mode=OneWay}"/><d:Run Text="1"/>] 
-            <Run Text="{Binding SelectedTask.Title, Mode=OneWay}"/><d:Run Text="Laundry"/>
-        </TextBlock>
+        <Grid Grid.Row="0" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0"
+                   FontSize="16" FontWeight="Bold">
+                Do task:
+            </Label>
+
+            <Border Grid.Column="1" 
+                    HorizontalAlignment="Right">
+                <local:TaskListItem DataContext="{Binding SelectedTask}">
+                    <local:TaskListItem.Style>
+                        <Style TargetType="Control">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </local:TaskListItem.Style>
+                </local:TaskListItem>
+            </Border>
+
+        </Grid>
 
         <Label Grid.Row="1" Grid.Column="0">
             Spend minutes:
@@ -81,20 +98,22 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
 
             <Button Grid.Column="0" 
-                                Command="{x:Static comm:SimulationCommands.DoTask}">
+                    Command="{Binding DoTaskCommand}">
                 Do task
             </Button>
             <CheckBox Grid.Column="1"
                       VerticalAlignment="Center"
+                      Width="Auto"
                       IsChecked="{Binding Finished}">
                 Finish
             </CheckBox>
             <Button Grid.Column="2" 
-                                Command="{x:Static comm:SimulationCommands.Rest}">
+                    Command="{Binding RestCommand}">
                 Rest
             </Button>
         </Grid>

@@ -1,42 +1,46 @@
 ﻿namespace DeepTime.Simulation;
 
-using DeepTime.Lib;
-using DeepTime.Lib.Data;
+using DeepTime.Advisor;
+using DeepTime.Advisor.Data;
+using DeepTime.Advisor.Statistics;
+using DeepTime.RL;
 
-public class SimulationTool<TAgent, TUser, TTaskGenerator>
-    where TAgent: IAgent<State, Advice>
-    where TUser: IUser
-    where TTaskGenerator: ITaskGenerator
+public class SimulationTool<TTask> where TTask : ITask
 {
-    private readonly Advisor<TAgent, SimulatedScheduleSouce> _advisor;
+    private readonly Advisor<TTask> _advisor;
 
-    private readonly TUser _user;    
+    private readonly IUser<TTask> _user;
     private readonly SimulatedScheduleSouce _scheduleSource;
 
-    private readonly List<Task> _lastAdvice = new(); 
+    private readonly List<TTask> _lastAdvice = new();
 
-    public TaskManager TaskManager { get; } = new();
-    public TTaskGenerator TaskGenerator { get; }
-    public TAgent Agent 
-    { 
-        get => _advisor.Agent; 
-        set => _advisor.Agent = value; 
+    public ITaskManager<TTask> TaskManager { get; }
+    public ITaskGenerator<TTask> TaskGenerator { get; set; }
+    public IStatistics Statistics => _advisor.Statistics;
+    public IAgent Agent
+    {
+        get => _advisor.Agent;
+        set => _advisor.Agent = value;
     }
 
-    public IReadOnlyList<Task> LastAdvice => _lastAdvice;
+    public IReadOnlyList<TTask> LastAdvice => _lastAdvice;
     public UserFeedback? CurrentFeedback { get; private set; } = null;
     public ScheduleContext ScheduleContext => _scheduleSource.GetCurrent();
 
     public bool DayGoes { get; private set; } = false;
     public int MinQueryMinutes { get; set; } = 10;
 
-    public SimulationTool(SimulationConfig<TAgent, TUser, TTaskGenerator> config)
+    public SimulationTool(SimulationConfig<TTask> config)
     {
         _user = config.User;
         _scheduleSource = config.ScheduleSouce;
-        _advisor = new(config.Agent, config.ScheduleSouce, config.AdvisorConfig);
+        _advisor = new(
+            config.Agent, 
+            config.ScheduleSouce, 
+            config.AdvisorConfig);
 
         TaskGenerator = config.TaskGenerator;
+        TaskManager = config.TaskManager;
     }
 
     public bool StepForward()
@@ -44,22 +48,22 @@ public class SimulationTool<TAgent, TUser, TTaskGenerator>
         ApplyAction();
         UpdateAdvices();
 
-        CurrentFeedback = _user.GetFeedback(_lastAdvice, TaskManager.GetUndone());
+        CurrentFeedback = _user.GetFeedback(_lastAdvice, TaskManager);
 
         return !TaskManager.GetUndone().Any();
-    }    
+    }
 
-    public void SimulateDay()
+    public StatisticsEntry SimulateDay()
     {
         StartNextDay();
-        while(!_scheduleSource.DayHasPassed())
+        while (!_scheduleSource.DayHasPassed())
         {
             if (StepForward()) break;
         }
-        FinishDay();
+        return FinishDay();
     }
 
-    public void SimulateDays(int dayCount) 
+    public void SimulateDays(int dayCount)
     {
         for (var i = 0; i < dayCount; i++)
         {
@@ -87,17 +91,18 @@ public class SimulationTool<TAgent, TUser, TTaskGenerator>
 
     private void ApplyAction()
     {
-        if (CurrentFeedback.HasValue) 
+        if (CurrentFeedback.HasValue)
         {
             var feedback = CurrentFeedback.Value;
 
+            _user.DoTask(feedback);
+
             if (feedback.Done)
                 TaskManager.MarkAsDone(feedback.TaskId, feedback.MinutesSpent);
-            else 
+            else
                 TaskManager.SubmitProgress(feedback.TaskId, feedback.MinutesSpent, feedback.NewEstimate);
 
             _scheduleSource.StepForward(feedback.MinutesSpent);
-            _user.DoTask(feedback);
         }
         else
         {
@@ -121,8 +126,7 @@ public class SimulationTool<TAgent, TUser, TTaskGenerator>
     {
         if (DayGoes)
         {
-            FinishDay();
-            return;
+            throw new InvalidOperationException();
         }
 
         foreach (var task in TaskGenerator.GenDay())
@@ -134,32 +138,36 @@ public class SimulationTool<TAgent, TUser, TTaskGenerator>
         _user.StartDay(TaskManager);
         _advisor.StartDay(TaskManager);
 
+        UpdateAdvices();
+        CurrentFeedback = _user.GetFeedback(_lastAdvice, TaskManager);
+
         DayGoes = true;
     }
-    
-    public void FinishDay()
+
+    public StatisticsEntry FinishDay()
     {
-        if (!DayGoes) 
+        if (!DayGoes)
         {
-            return;
+            throw new InvalidOperationException();
         }
 
-        _advisor.FinishDay(TaskManager); 
+        var entry = _advisor.FinishDay(TaskManager);
 
         TaskManager.Clear();
         TaskGenerator.ResetCounter();
 
-        DayGoes = false;
+        DayGoes = false;        
+
+        return entry;
     }
 }
 
-public record SimulationConfig<TAgent, TUser, TTaskGenerator>(
-    TUser User, 
-    TAgent Agent, 
-    TTaskGenerator TaskGenerator,
-    SimulatedScheduleSouce ScheduleSouce, 
+public record SimulationConfig<TTask>(
+    IUser<TTask> User,
+    IAgent Agent,
+    ITaskGenerator<TTask> TaskGenerator,
+    ITaskManager<TTask> TaskManager,
+    SimulatedScheduleSouce ScheduleSouce,
     AdvisorConfig AdvisorConfig
 )
-    where TAgent : IAgent<State, Advice>
-    where TUser : IUser
-    where TTaskGenerator : ITaskGenerator;
+    where TTask : ITask;

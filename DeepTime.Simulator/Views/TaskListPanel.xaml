@@ -5,11 +5,25 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
-             xmlns:comm="clr-namespace:DeepTime.Simulator.Commands"
+             
+             IsEnabled="{Binding Enabled}"
              
              mc:Ignorable="d" 
              d:DesignHeight="250" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance vm:TaskVM}">
+             d:DataContext="{d:DesignInstance vm:TaskListVM}">
+    <UserControl.Resources>
+        <Style TargetType="ListBoxItem" x:Key="ItemStyle">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                </Trigger>                
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -18,34 +32,17 @@
 
         <ListBox Grid.Row="0"
                  ItemsSource="{Binding Tasks}" 
-                 SelectedItem="{Binding SelectedTask}" 
-                 SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
+                 SelectedItem="{Binding SelectedTask, Mode=TwoWay}" 
                  SelectionMode="Single"
                  ScrollViewer.VerticalScrollBarVisibility="Visible"
                  BorderBrush="Transparent"
+                 ItemContainerStyle="{StaticResource ItemStyle}"
                  SelectionChanged="ListBox_SelectionChanged">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <local:TaskListItem Height="Auto"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="ListBoxItem">
-                    <Setter Property="Background" Value="Transparent"/>
-                    <Style.Triggers>
-                        <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="LightGray"/>
-                            <Setter Property="BorderBrush" Value="Black"/>
-                        </Trigger>
-                        <DataTrigger Binding="{Binding Proposed}" Value="True">
-                            <Setter Property="Background" Value="Yellow"/>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding Inner.Done}" Value="True">
-                            <Setter Property="Background" Value="LightGreen"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </ListBox.ItemContainerStyle>
         </ListBox>
 
         <Grid Grid.Row="1">
@@ -55,11 +52,11 @@
             </Grid.ColumnDefinitions>
 
             <Button Grid.Column="0"
-                    Command="{x:Static comm:TaskCommands.DeleteTask}">
+                    Command="{Binding DeleteCommand}">
                 Delete task
             </Button>
             <Button Grid.Column="1"
-                    Command="{x:Static comm:TaskCommands.ClearTasks}">
+                    Command="{Binding ClearCommand}">
                 Clear tasks
             </Button>
         </Grid>

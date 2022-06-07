@@ -1,77 +1,125 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DeepTime.Simulator.ViewModels;
+
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+
 using DeepTime.Simulation;
+using Simulator.Services;
+using Simulator.Messages;
 
-using System.Windows;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace DeepTime.Simulator.ViewModels;
 
-public class UserConfigVM : DependencyObject
+public sealed partial class UserConfigVM : ObservableValidator,
+    IRecipient<UserConfigLoadedMessage>,
+    IRecipient<SimulationStartedMessage>,
+    IRecipient<SimulationEndedMessage>
 {
-    public UserConfig UserConfig { get; private set; } = UserConfig.Default;
+    public IReadOnlyList<UserStrategy> UserStrategies { get; } = Enum.GetValues<UserStrategy>();
 
-    #region Dependency properties
-    public int MaxWorkMinutes
+    private UserService _userService;
+    private UserConfig _inner;
+
+    public IMessenger Messenger { get; }
+
+
+    public UserConfigVM(UserService service, IMessenger messenger)
     {
-        get => (int)GetValue(MaxWorkMinutesProperty);
-        set => SetValue(MaxWorkMinutesProperty, value);
-    }
-    public static readonly DependencyProperty MaxWorkMinutesProperty =
-        DependencyProperty.Register("MaxWorkMinutes", typeof(int), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.MaxWorkMinutes));
+        _userService = service;
+        _inner = service.User.Config;
+        Messenger = messenger;
 
+        Messenger.RegisterAll(this);
+    }
+
+    #region Observable properties
+    [ObservableProperty]
+    bool _enabled = true;
+
+    [Required]
+    [Range(1, int.MaxValue)] 
+    public int MaxWorkMinutes 
+    { 
+        get => _inner.MaxWorkMinutes; 
+        set => SetProperty(_inner.MaxWorkMinutes, value, _inner, (m, v) => m.MaxWorkMinutes = v, true);
+    }
+
+    [Required]
+    [Range(0.0, 1.0)]
     public double Initiativeness
     {
-        get => (double)GetValue(InitiativenessProperty);
-        set => SetValue(InitiativenessProperty, value);
+        get => _inner.Initiativeness;
+        set => SetProperty(_inner.Initiativeness, value, _inner, (m, v) => m.Initiativeness = v, true);
     }
-    public static readonly DependencyProperty InitiativenessProperty =
-        DependencyProperty.Register("Initiativeness", typeof(double), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.Initiativeness));
 
+    [Required]
+    [Range(1, int.MaxValue)]
     public int MaxContiniousWorkMinutes
     {
-        get => (int)GetValue(MaxContiniousWorkMinutesProperty);
-        set => SetValue(MaxContiniousWorkMinutesProperty, value);
+        get => _inner.MaxContiniousWorkMinutes;
+        set => SetProperty(_inner.MaxContiniousWorkMinutes, value, _inner, (m, v) => m.MaxContiniousWorkMinutes = v, true);
     }
-    public static readonly DependencyProperty MaxContiniousWorkMinutesProperty =
-        DependencyProperty.Register("MaxContiniousWorkMinutes", typeof(int), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.MaxContiniousWorkMinutes));
 
+    [Required]
+    [Range(1, int.MaxValue)]
     public int MaxMinutesOnOneTask
     {
-        get => (int)GetValue(MaxMinutesOnOneTaskProperty);
-        set => SetValue(MaxMinutesOnOneTaskProperty, value);
+        get => _inner.MaxMinutesOnOneTask;
+        set => SetProperty(_inner.MaxMinutesOnOneTask, value, _inner, (m, v) => m.MaxMinutesOnOneTask = v, true);
     }
-    public static readonly DependencyProperty MaxMinutesOnOneTaskProperty =
-        DependencyProperty.Register("MaxMinutesOnOneTask", typeof(int), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.MaxMinutesOnOneTask));
 
+    [Required]
+    [Range(1, int.MaxValue)]
     public int MinRest
     {
-        get => (int)GetValue(MinRestProperty);
-        set => SetValue(MinRestProperty, value);
+        get => _inner.MinRest;
+        set => SetProperty(_inner.MinRest, value, _inner, (m, v) => m.MinRest = v, true);
     }
-    public static readonly DependencyProperty MinRestProperty =
-        DependencyProperty.Register("MinRest", typeof(int), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.MinRest));
 
+    [Required]
+    [Range(0.0, 1.0)]
     public double EstimateAccuracy
     {
-        get => (double)GetValue(EstimateAccuracyProperty);
-        set => SetValue(EstimateAccuracyProperty, value);
+        get => _inner.EstimateAccuracy;
+        set => SetProperty(_inner.EstimateAccuracy, value, _inner, (m, v) => m.EstimateAccuracy = v);
     }
-    public static readonly DependencyProperty EstimateAccuracyProperty =
-        DependencyProperty.Register("EstimateAccuracy", typeof(double), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.EstimateAccuracy));
 
-    public UserStrategy UserStrategy
+    [Required]
+    public UserStrategy Strategy
     {
-        get => (UserStrategy)GetValue(UserStrategyProperty);
-        set => SetValue(UserStrategyProperty, value);
+        get => _inner.Strategy;
+        set => SetProperty(_inner.Strategy, value, _inner, (m, v) => m.Strategy = v);
     }
-    public static readonly DependencyProperty UserStrategyProperty =
-        DependencyProperty.Register("UserStrategy", typeof(UserStrategy), typeof(UserConfigVM), new PropertyMetadata(UserConfig.Default.Strategy));
-
-    private static UserStrategy[] _userStrategies = Enum.GetValues<UserStrategy>();
-    public UserStrategy[] UserStrategies => _userStrategies;    
     #endregion
 
+    [ICommand]
+    public void Load()
+    {
+        _userService.LoadConfig();
+    }
+
+    [ICommand]
+    public void Save()
+    {
+        _userService.SaveConfig();
+    }
+
+    public void Receive(UserConfigLoadedMessage message)
+    {
+        _inner = message.Config;
+        OnPropertyChanged(string.Empty);
+    }
+
+    public void Receive(SimulationStartedMessage message)
+    {
+        Enabled = false;
+    }
+
+    public void Receive(SimulationEndedMessage message)
+    {
+        Enabled = true;
+    }
 }

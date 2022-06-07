@@ -1,17 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace DeepTime.Simulator;
+
+using CommunityToolkit.Mvvm.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 
-namespace DeepTime.Simulator
+using Simulator.Services;
+using Simulator.ViewModels;
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App : Application
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
+    protected override void OnStartup(StartupEventArgs e)
     {
+        base.OnStartup(e);
+        Ioc.Default.ConfigureServices(
+            ServiceConfigurator.CreateAppServiceProvider()
+        );
     }
 }

@@ -13,16 +13,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DeepTime.Simulator.Views
+namespace DeepTime.Simulator.Views;
+
+
+using CommunityToolkit.Mvvm.DependencyInjection;
+
+using Simulator.ViewModels;
+
+/// <summary>
+/// Логика взаимодействия для UserStatePanel.xaml
+/// </summary>
+public partial class UserStatePanel : UserControl
 {
-    /// <summary>
-    /// Логика взаимодействия для UserStatePanel.xaml
-    /// </summary>
-    public partial class UserStatePanel : UserControl
+    public UserStatePanel()
     {
-        public UserStatePanel()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+        DataContext = Ioc.Default.GetRequiredService<UserStateVM>();
     }
 }

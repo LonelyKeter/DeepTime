@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
-             xmlns:model="clr-namespace:DeepTime.Simulator.Model"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              
              Padding="8 5"
              
              mc:Ignorable="d" 
              d:DesignHeight="40" d:DesignWidth="350"
-             d:DataContext="{d:DesignInstance model:Task}">
+             d:DataContext="{d:DesignInstance vm:TaskVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
             <Setter Property="Background" Value="White"/>
@@ -20,6 +20,16 @@
     <UserControl.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="Margin" Value="5 0"/>
+        </Style>
+        <Style TargetType="Grid">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Proposed}" Value="True">
+                    <Setter Property="Background" Value="Yellow"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Done}" Value="True">
+                    <Setter Property="Background" Value="LightGreen"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
     
@@ -36,25 +46,25 @@
         </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0" Grid.ColumnSpan="3">
-            [<Run Text="{Binding Inner.Id}"/><d:Run Text="1"/>] 
+            [<Run Text="{Binding Id}"/><d:Run Text="1"/>] 
             <Run Text="{Binding Title}"/><d:Run Text="Laundry"/>
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="0">
             <Run Text="Progress: "/>
-            <Run Text="{Binding Inner.MinutesSpent}"/><d:Run Text="70"/>
+            <Run Text="{Binding MinutesSpent}"/><d:Run Text="70"/>
             <Run Text="/"/>
-            <Run Text="{Binding Inner.MinutesEstimate}"/><d:Run Text="120"/>
+            <Run Text="{Binding MinutesEstimate}"/><d:Run Text="120"/>
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="1">
             <Run Text="Priority: "/>
-            <Run Text="{Binding Inner.Priority}" Foreground="BlueViolet"/>
+            <Run Text="{Binding Priority}" Foreground="BlueViolet"/>
         </TextBlock>
 
         <TextBlock Grid.Row="1" Grid.Column="2">
             <Run Text="Attractiveness: "/>
-            <Run Text="{Binding Inner.Attractiveness}" Foreground="LightPink"/>
+            <Run Text="{Binding Attractiveness}" Foreground="LightPink"/>
         </TextBlock>
     </Grid>
 </UserControl>
