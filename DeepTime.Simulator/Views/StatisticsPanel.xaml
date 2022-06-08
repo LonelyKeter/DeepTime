@@ -40,25 +40,25 @@
                        TextAlignment="Center">
                 Minimum reward:
                 <LineBreak/>
-                <Run Text="{Binding Min}"/>
+                <Run Text="{Binding Min, StringFormat=N3}"/>
             </TextBlock>
             <TextBlock Grid.Column="1"
                        TextAlignment="Center">
                 Median:
                 <LineBreak/>
-                <Run Text="{Binding Median}"/>
+                <Run Text="{Binding Median, StringFormat=N3}"/>
             </TextBlock>
             <TextBlock Grid.Column="2"
                        TextAlignment="Center">
                 Average:
                 <LineBreak/>
-                <Run Text="{Binding Average}"/>
+                <Run Text="{Binding Average, StringFormat=N3}"/>
             </TextBlock>
             <TextBlock Grid.Column="3"
                        TextAlignment="Center">
                 Maximum:
                 <LineBreak/>
-                <Run Text="{Binding Max}"/>
+                <Run Text="{Binding Max, StringFormat=N3}"/>
             </TextBlock>
         </Grid>
 
@@ -110,7 +110,7 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Reward" Binding="{Binding EpisodeReward, Mode=OneTime}"/>
+                <DataGridTextColumn Header="Reward" Binding="{Binding EpisodeReward, Mode=OneTime, StringFormat=N3}"/>
             </DataGrid.Columns>
         </DataGrid>
 

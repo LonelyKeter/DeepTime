@@ -89,15 +89,23 @@ public class Advisor<TTask> where TTask : ITask
     {
         var reward = 0.0;
 
+        var positiveCap = 0.0;
+        var negativeCap = 0.0;
+
         foreach (var pr in PriorityValues)
         {
             var (done, overall) = tasks[pr.AsIndex()];
 
             reward += done * _config.ComplitionRewards[pr.AsIndex()];
             reward += (overall - done) * _config.FailurePenalties[pr.AsIndex()];
+
+            positiveCap += overall * _config.ComplitionRewards[pr.AsIndex()];
+            negativeCap -= overall * _config.FailurePenalties[pr.AsIndex()];
         }
 
-        return reward;
+        if (reward == 0.0) return 0.0;
+        else if (reward < 0.0) return reward * 10.0 / negativeCap;
+        else return reward * 5.0 / positiveCap;
     }    
 
     private static TaskEntry[] CountTasks<T>(T tasks) where T : ITaskManager<TTask>

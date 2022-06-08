@@ -41,7 +41,7 @@ public sealed partial class StatisticsVM : ObservableObject,
     {
         new Axis
         {
-            MinStep = 1,
+            MinStep = 0.1,
         }
     };
 
@@ -114,10 +114,10 @@ public sealed partial class StatisticsVM : ObservableObject,
     {
         Values = values,
         Name = "Medians",
-        Stroke = new SolidColorPaint(SkiaSharp.SKColors.Blue, 2),
+        Stroke = new SolidColorPaint(SkiaSharp.SKColors.Blue, 1),
         Fill = null,
         GeometryFill = null,
-        GeometryStroke = new SolidColorPaint(SkiaSharp.SKColors.Blue, 2),
+        GeometryStroke = new SolidColorPaint(SkiaSharp.SKColors.Blue, 1),
         GeometrySize = 1,
         LineSmoothness = 0,
         ZIndex = 1,
@@ -127,9 +127,9 @@ public sealed partial class StatisticsVM : ObservableObject,
     {
         Values = values,
         Name = "Averages",
-        Stroke = new SolidColorPaint(SkiaSharp.SKColors.Green, 2),
+        Stroke = new SolidColorPaint(SkiaSharp.SKColors.Green, 1),
         GeometryFill = null,
-        GeometryStroke = new SolidColorPaint(SkiaSharp.SKColors.Green, 2),
+        GeometryStroke = new SolidColorPaint(SkiaSharp.SKColors.Green, 1),
         Fill = null,
         GeometrySize = 1,
         LineSmoothness = 0,
