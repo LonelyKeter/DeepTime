@@ -75,7 +75,7 @@ public class Advisor<TTask> where TTask : ITask
     } 
         
 
-    public StatisticsEntry FinishDay()
+    public (uint, StatisticsEntry) FinishDay()
     {
         var vec = CollectCurrentStateVec();
         var progress = CountTasks(_taskManager);
@@ -86,7 +86,7 @@ public class Advisor<TTask> where TTask : ITask
         Agent.EndEpisode(vec, penalty);
 
         var entry = new StatisticsEntry(progress, TotalReward);
-        return entry;
+        return (Agent.EpisodeNumber, entry);
     }
 
     private Advice GetNextAction(double[] state, double reward)

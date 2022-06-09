@@ -5,6 +5,8 @@ public interface IAgent
     int StateVecLength { get; }
     int ActionCount { get; }
 
+    uint EpisodeNumber { get; }
+
     void SetNext(double[] state, double reward);
     int Eval();
 

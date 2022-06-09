@@ -24,6 +24,8 @@ public class DQN : IAgent, ISerializable<DQN>
 
     private bool InEpisode => _lastState is not null;
 
+    public uint EpisodeNumber { get; private set; } = 0;
+
     private int? _lastAction;
     private double[]? _lastState;
 
@@ -43,6 +45,7 @@ public class DQN : IAgent, ISerializable<DQN>
 
         _lastAction = null;
         _lastState = null;
+        EpisodeNumber++;
     }
 
     public void StartEpisode(double[] state)

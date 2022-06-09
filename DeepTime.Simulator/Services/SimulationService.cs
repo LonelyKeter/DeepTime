@@ -87,7 +87,8 @@ public class SimulationService :
 
     public void SimulateDay()
     {
-        Messenger.Send(new DayFinishedMessage(SimulationTool.SimulateDay()));
+        var (episodeNumber, entry) = SimulationTool.SimulateDay();
+        Messenger.Send(new DayFinishedMessage(episodeNumber, entry));
     }   
 
     public void StartDay()
@@ -100,7 +101,8 @@ public class SimulationService :
 
     public void FinishDay()
     {
-        Messenger.Send(new DayFinishedMessage(SimulationTool.FinishDay()));
+        var (episodeNumber, entry) = SimulationTool.FinishDay();
+        Messenger.Send(new DayFinishedMessage(episodeNumber, entry));
     }
 
     private void UpdateSuggestions()

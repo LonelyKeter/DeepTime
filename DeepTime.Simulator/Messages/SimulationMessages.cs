@@ -17,6 +17,6 @@ public record UserStateChangedChangedMessage(UserState New);
 public record AgentChangedMessage(IAgent New);
 public record DQNLoadedMessage(DQN New);
 public record DayStartedMessage(IReadOnlyCollection<TaskVM> Tasks);
-public record DayFinishedMessage(StatisticsEntry Entry);
+public record DayFinishedMessage(uint EpisodeNumber, StatisticsEntry Entry);
 public record SimulationStartedMessage();
 public record SimulationEndedMessage();

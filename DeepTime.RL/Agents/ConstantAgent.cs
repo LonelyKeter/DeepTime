@@ -12,8 +12,9 @@ public class ConstantAgent : IAgent
     public int StateVecLength { get; }
     public int ActionCount { get; }
 
+    public uint EpisodeNumber { get; private set; } = 0;
 
-    private readonly List<int> _allowedActions = new List<int>();
+    private readonly List<int> _allowedActions = new();
     private bool _shouldFallback = false;
     private readonly int _fallbackAction;
 
@@ -25,7 +26,7 @@ public class ConstantAgent : IAgent
         _fallbackAction = fallbackAction;
     }
 
-    public void EndEpisode(double[] state, double reward) { }
+    public void EndEpisode(double[] state, double reward) { EpisodeNumber++; }
 
     public int Eval()
     {

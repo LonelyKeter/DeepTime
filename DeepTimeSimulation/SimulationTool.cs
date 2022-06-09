@@ -51,7 +51,7 @@ public class SimulationTool<TTask> where TTask : ITask
         return !TaskManager.GetUndone().Any();
     }
 
-    public StatisticsEntry SimulateDay()
+    public (uint, StatisticsEntry) SimulateDay()
     {
         StartNextDay();
         while (!_scheduleSource.DayHasPassed())
@@ -61,7 +61,7 @@ public class SimulationTool<TTask> where TTask : ITask
         return FinishDay();
     }
 
-    public IEnumerable<StatisticsEntry> SimulateDays(int dayCount)
+    public IEnumerable<(uint, StatisticsEntry)> SimulateDays(int dayCount)
     {
         for (var i = 0; i < dayCount; i++)
         {
@@ -149,7 +149,7 @@ public class SimulationTool<TTask> where TTask : ITask
         DayGoes = true;
     }
 
-    public StatisticsEntry FinishDay()
+    public (uint, StatisticsEntry) FinishDay()
     {
         if (!DayGoes)
         {

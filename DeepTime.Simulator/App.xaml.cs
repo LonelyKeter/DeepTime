@@ -6,6 +6,9 @@ using System.Windows;
 
 using Simulator.Services;
 using Simulator.ViewModels;
+
+
+using LiveChartsCore;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
