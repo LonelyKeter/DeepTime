@@ -82,6 +82,10 @@ public interface ITask
 public record ScheduleContext(DayOfWeek DayOfWeek, bool IsHolliday, TimeOnly Time, TimeBounds Bounds);
 public record struct WorkloadContextEntry(int MinutesEstimate, int Count);
 public record struct State(WorkloadContext TODO, WorkloadContext Done, ScheduleContext ScheduleContext);
-public record struct Advice(Priority Priority, Attractiveness Attractiveness, bool Rest);
+public record struct Advice(Priority Priority, Attractiveness Attractiveness, bool Rest)
+{
+    public static Advice PickRest => new(Priority.VeryLow, Attractiveness.VeryLow, true);
+    public static Advice PickTask(Priority pr, Attractiveness attr) => new(pr, attr, false);
+}
 
 public record struct TimeBounds(TimeOnly Start, TimeOnly End);

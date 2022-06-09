@@ -294,16 +294,15 @@ public sealed partial class ObservableStatisticData
         yield return (TotalTaskPercentageAverages, SKColors.Black, "Total task complition %");
     }
 
-    private static SKColor PriorityColor(Priority priority)
+    private static SKColor PriorityColor(Priority priority) => priority switch
     {
-        var interpolation = (double)priority / (double)Priority.VeryHigh;
-
-        var red = (byte)(interpolation * SKColors.Red.Red + (1.0 - interpolation) * SKColors.Green.Red);
-        var green = (byte)(interpolation * SKColors.Red.Green + (1.0 - interpolation) * SKColors.Green.Green);
-        var blue = (byte)(interpolation * SKColors.Red.Blue + (1.0 - interpolation) * SKColors.Green.Blue);
-
-        return new(red, green, blue);
-    }
+        Priority.VeryLow => SKColors.Green,
+        Priority.Low=> SKColors.GreenYellow,
+        Priority.Medium => SKColors.Yellow,
+        Priority.High => SKColors.Red,
+        Priority.VeryHigh => SKColors.DarkRed,
+        _ => SKColors.White
+    };
 }
 
 public sealed class StatisticsPlotConfig

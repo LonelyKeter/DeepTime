@@ -48,10 +48,10 @@ public partial class SimulationControlVM : ObservableValidator,
     #region Observable properties
     public string AgentType
     {
-        get => _agentService.CurrentAgent;
+        get => _agentService.CurrentAgentType;
         set
         {
-            if (value != _agentService.CurrentAgent)
+            if (value != _agentService.CurrentAgentType)
             {
                 OnPropertyChanging();
                 _agentService.ChangeAgent(value);

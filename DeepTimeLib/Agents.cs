@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace DeepTime.Advisor;
 
-namespace DeepTime.Advisor;
+using DeepTime.Advisor.Data;
 
 using DeepTime.RL.Agents;
 using DeepTime.RL;
@@ -15,9 +11,38 @@ public static class Agents
         return new(
             policy,
             new(
-                Data.StateConverter.InputSize,
-                Data.AdviceEnumerator.EnumCount,
+                StateConverter.InputSize,
+                AdviceEnumerator.EnumCount,
                 new() { LearningRate = hyperParameters.LearningRate}),
             hyperParameters);
     }
+
+    public static ConstantAgent CreatePassiveAgent()
+        => new(
+            StateConverter.InputSize,
+            AdviceEnumerator.EnumCount,
+            new() { AdviceEnumerator.Enumerate(Advice.PickRest) },
+            AdviceEnumerator.Enumerate(Advice.PickRest));
+
+    public static ConstantAgent CreateVeryHighPriorityAgent()
+        => new(
+            StateConverter.InputSize,
+            AdviceEnumerator.EnumCount,
+            new(
+                Types.AttractivenessesValues
+                    .Select(attr => Advice.PickTask(Priority.VeryHigh, attr))
+                    .Select(AdviceEnumerator.Enumerate)
+                ),
+            AdviceEnumerator.Enumerate(Advice.PickRest));
+
+    public static ConstantAgent CreateHighPriorityAgent()
+        => new(
+            StateConverter.InputSize,
+            AdviceEnumerator.EnumCount,
+            new(
+                Types.AttractivenessesValues
+                    .Select(attr => Advice.PickTask(Priority.High, attr))
+                    .Select(AdviceEnumerator.Enumerate)
+                ),
+            AdviceEnumerator.Enumerate(Advice.PickRest));
 }
