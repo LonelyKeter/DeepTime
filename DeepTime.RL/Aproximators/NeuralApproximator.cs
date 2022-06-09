@@ -16,7 +16,7 @@ internal class NeuralApproximator
         layerSizes.AddRange(hiddenSizes);
         layerSizes.Add(outputSize);
 
-        _network = new(new SigmoidFunction(), inputSize, layerSizes.ToArray());
+        _network = new(new SigmoidFunction(0.5), inputSize, layerSizes.ToArray());
         _teacher = new(_network) 
         { 
             LearningRate = learningRate, 

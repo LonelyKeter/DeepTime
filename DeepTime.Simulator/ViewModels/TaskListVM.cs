@@ -32,7 +32,7 @@ public sealed partial class TaskListVM: ObservableObject,
 
     #region Observable props 
     [ObservableProperty]
-    bool _enabled;
+    bool _enabled = true;
 
 
     private TaskVM? _selectedTask = null;

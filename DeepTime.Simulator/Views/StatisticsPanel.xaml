@@ -6,8 +6,7 @@
              xmlns:local="clr-namespace:DeepTime.Simulator.Views"
              xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
              xmlns:lc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800"
+             mc:Ignorable="d"  d:DesignWidth="800"
              d:DataContext="{d:DesignInstance vm:StatisticsVM}">
     <d:DesignerProperties.DesignStyle>
         <Style TargetType="UserControl">
@@ -21,116 +20,74 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0"
-              Width="350"
-              VerticalAlignment="Center"
-              HorizontalAlignment="Center">
+        <local:StatisticsInfoPanel Grid.Row="0"
+                                   DataContext="{Binding}"/>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <local:StatisticsTable Grid.Row="0"
+                               DataContext="{Binding}"
+                               Margin="5" Padding="1"
+                               MaxHeight="400"/>
+
+            <GridSplitter Grid.Row="1"
+                      HorizontalAlignment="Stretch"
+                      BorderThickness="3" BorderBrush="LightGray"
+                      ResizeDirection="Rows"
+                      ResizeBehavior="PreviousAndNext"/>
+
+            <local:StatisticsPlotPanel Grid.Row ="2"
+                           Margin="10 10"
+                           DataContext="{Binding}"
+                           MinHeight="300"/>
+        </Grid>
+
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0"
-                       TextAlignment="Center">
-                Minimum reward:
-                <LineBreak/>
-                <Run Text="{Binding Min, StringFormat=N3}"/>
-            </TextBlock>
-            <TextBlock Grid.Column="1"
-                       TextAlignment="Center">
-                Median:
-                <LineBreak/>
-                <Run Text="{Binding Median, StringFormat=N3}"/>
-            </TextBlock>
-            <TextBlock Grid.Column="2"
-                       TextAlignment="Center">
-                Average:
-                <LineBreak/>
-                <Run Text="{Binding Average, StringFormat=N3}"/>
-            </TextBlock>
-            <TextBlock Grid.Column="3"
-                       TextAlignment="Center">
-                Maximum:
-                <LineBreak/>
-                <Run Text="{Binding Max, StringFormat=N3}"/>
-            </TextBlock>
-        </Grid>
 
-        <DataGrid Grid.Row="1"
-                      Margin="5" Padding="1"
-                      ItemsSource="{Binding Entries}"
-                      AutoGenerateColumns="False"
-                      VerticalScrollBarVisibility="Auto">
-            <DataGrid.Columns>
-                <DataGridTemplateColumn Header="Very low">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding TasksDone[0]}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Low">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding TasksDone[1]}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Medium">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding TasksDone[2]}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="High">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding TasksDone[3]}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Very high">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding TasksDone[4]}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Total">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <local:StatisticsGreedCell DataContext="{Binding Total}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTextColumn Header="Reward" Binding="{Binding EpisodeReward, Mode=OneTime, StringFormat=N3}"/>
-            </DataGrid.Columns>
-        </DataGrid>
 
-        <GridSplitter Grid.Row="2"
-                      HorizontalAlignment="Stretch"
-                      BorderThickness="3" BorderBrush="LightGray"/>
+            <StackPanel Grid.Column="0"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+                <TextBlock
+                Margin="10">
+                Account for
+                </TextBlock>
+                <TextBox Width="80" Height="20" Text="{Binding AccountFor, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Margin="10">days</TextBlock>
+            </StackPanel>
 
-        <lc:CartesianChart Grid.Row ="3"
-                           Margin="10 10"
-                           
-                           ZoomMode="X"                           
-                           Series="{Binding Medians}"
-                           XAxes="{Binding MediansXAxis}"
-                           YAxes="{Binding MediansYAxis}"/>
+            <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+                <TextBlock
+                Margin="10">
+                Keep history for
+                </TextBlock>
+                <TextBox Width="80" Height="20" Text="{Binding Data.MaxCount, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBlock Margin="10">days</TextBlock>
+            </StackPanel>
 
-        <Button Grid.Row="4"
+
+            <Button Grid.Column="2"
                 Command="{Binding ClearCommand}"
-                MaxWidth="100">
-            Clear
-        </Button>
+                MaxWidth="100"
+                Margin="10">
+                Clear
+            </Button>
+        </Grid>
 
     </Grid>
 </UserControl>

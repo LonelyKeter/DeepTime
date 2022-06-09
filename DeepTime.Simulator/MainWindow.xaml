@@ -51,8 +51,9 @@
             <TabItem Header="Statistics">
                 <ScrollViewer HorizontalAlignment="Center" 
                           HorizontalScrollBarVisibility="Auto">
-                    <v:StatisticsPanel
-                        MaxHeight="700"/>
+                    <v:StatisticsPanel MaxHeight="{Binding Height, RelativeSource={
+                        RelativeSource Mode=FindAncestor,AncestorLevel=1,AncestorType=TabItem},
+                        FallbackValue=BindingFailed}"/>
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="Agent">

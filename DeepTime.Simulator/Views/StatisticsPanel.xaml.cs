@@ -29,4 +29,9 @@ public partial class StatisticsPanel : UserControl
         InitializeComponent();
         DataContext = Ioc.Default.GetRequiredService<StatisticsVM>();
     }
+
+    private void StatisticsInfoPanel_Loaded(object sender, RoutedEventArgs e)
+    {
+
+    }
 }

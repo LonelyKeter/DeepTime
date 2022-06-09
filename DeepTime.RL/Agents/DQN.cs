@@ -54,7 +54,8 @@ public class DQN : IAgent, ISerializable<DQN>
     {
         AssertEpisodeActive();
 
-        return _policy.Eval(_qApproximator.GetQValues(_lastState));
+        _lastAction = _policy.Eval(_qApproximator.GetQValues(_lastState));
+        return _lastAction.Value;
     }
 
     public void SetNext(double[] state, double reward)

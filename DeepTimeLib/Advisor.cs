@@ -12,6 +12,9 @@ public class Advisor<TTask> where TTask : ITask
     private readonly IScheduleSource _scheduleSource;
     private readonly AdvisorConfig _config;
 
+    public double TotalReward { get; private set; }
+    private ITaskManager<TTask> _taskManager;
+
     public static readonly int StateVecLength = StateConverter.InputSize;
     public static readonly int ActionCount = AdviceEnumerator.EnumCount;
 
@@ -23,7 +26,6 @@ public class Advisor<TTask> where TTask : ITask
             _agent = value;
         }
     }
-    public IStatistics Statistics { get; } = new Statistics.Statistics();
 
     public Advisor(
         IAgent agent, 
@@ -35,39 +37,55 @@ public class Advisor<TTask> where TTask : ITask
         _config = config;
     }
 
-    public IEnumerable<TTask>? GetAdvice<T>(T tasks) where T: ITaskManager<TTask>
+    public IEnumerable<TTask>? GetAdvice()
     {
-        var state = CollectCurrentState(tasks);
-        var stateVec = StateConverter.ToVector(state);
-        var action = GetNextAction(stateVec, 0.0f);
+        var stateVec = CollectCurrentStateVec();
+        _agent.SetNext(stateVec, 0.0);
+        return GetAdviceFromUpdatedState(stateVec);        
+    }
+
+    private IEnumerable<TTask>? GetAdviceFromUpdatedState(double[] stateVec)
+    {
+        var action = AdviceEnumerator.GetValue(_agent.Eval());
 
         //CARE: Can loop if agent wont advise rest or valid task list
-        while (!action.Rest && !tasks.GetUndone(action.Priority, action.Attractiveness).Any())
+        while (!action.Rest && !_taskManager.GetUndone(action.Priority, action.Attractiveness).Any())
         {
             action = GetNextAction(stateVec, -1.0f);
         }
 
-        return !action.Rest ? tasks.GetUndone(action.Priority, action.Attractiveness) : null;
+        return !action.Rest ? _taskManager.GetUndone(action.Priority, action.Attractiveness) : null;
     }
 
-    public void StartDay<T>(T tasks) where T : ITaskManager<TTask>
-        => Agent.StartEpisode(
-                StateConverter.ToVector(
-                    CollectCurrentState(tasks)
-                )
-           );
-
-    public StatisticsEntry FinishDay<T>(T tasks) where T : ITaskManager<TTask>
+    public IEnumerable<TTask>? SubmitComplition(Priority priority)
     {
-        var state = CollectCurrentState(tasks);
-        var vec = StateConverter.ToVector(state);
-        var progress = CountTasks(tasks);
-        var reward = CalculateEpisodeReward(progress);
+        var stateVec = CollectCurrentStateVec();
+        var reward = _config.ComplitionRewards[priority.AsIndex()];
+        TotalReward += reward;
 
-        Agent.EndEpisode(vec, reward);
+        return GetAdviceFromUpdatedState(stateVec);
+    }
 
-        var entry = new StatisticsEntry(progress, reward);
-        Statistics.Submit(entry);
+    public void StartDay<T>(T taskManager) where T : ITaskManager<TTask>
+    {
+        _taskManager = taskManager;
+        TotalReward = 0;
+
+        Agent.StartEpisode(CollectCurrentStateVec());
+    } 
+        
+
+    public StatisticsEntry FinishDay()
+    {
+        var vec = CollectCurrentStateVec();
+        var progress = CountTasks(_taskManager);
+        var penalty = CalculateEpisodePenalty(progress);
+
+        TotalReward += penalty;
+
+        Agent.EndEpisode(vec, penalty);
+
+        var entry = new StatisticsEntry(progress, TotalReward);
         return entry;
     }
 
@@ -77,35 +95,28 @@ public class Advisor<TTask> where TTask : ITask
         return AdviceEnumerator.GetValue(Agent.Eval());
     }
 
-    private State CollectCurrentState<T>(T tasks) where T : ITaskManager<TTask>
+    private State CollectCurrentState()
     {
-        var (todo, done) = WorkloadContext.GetTodoAndDone<T, TTask>(tasks);
+        var (todo, done) = WorkloadContext.GetTodoAndDone<ITaskManager<TTask>, TTask>(_taskManager);
         var scheduleContext = _scheduleSource.GetCurrent();
 
         return new State(todo, done, scheduleContext);
-    }    
+    }
 
-    private double CalculateEpisodeReward(TaskEntry[] tasks) 
+    private double[] CollectCurrentStateVec() => StateConverter.ToVector(CollectCurrentState());
+
+    private double CalculateEpisodePenalty(TaskEntry[] tasks) 
     {
-        var reward = 0.0;
-
-        var positiveCap = 0.0;
-        var negativeCap = 0.0;
+        var penalty = 0.0;
 
         foreach (var pr in PriorityValues)
         {
             var (done, overall) = tasks[pr.AsIndex()];
 
-            reward += done * _config.ComplitionRewards[pr.AsIndex()];
-            reward += (overall - done) * _config.FailurePenalties[pr.AsIndex()];
-
-            positiveCap += overall * _config.ComplitionRewards[pr.AsIndex()];
-            negativeCap -= overall * _config.FailurePenalties[pr.AsIndex()];
+            penalty += (overall - done) * _config.FailurePenalties[pr.AsIndex()];
         }
 
-        if (reward == 0.0) return 0.0;
-        else if (reward < 0.0) return reward * 10.0 / negativeCap;
-        else return reward * 5.0 / positiveCap;
+        return penalty;
     }    
 
     private static TaskEntry[] CountTasks<T>(T tasks) where T : ITaskManager<TTask>

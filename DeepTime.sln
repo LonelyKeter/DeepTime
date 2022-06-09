@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AForge.Math", "AForge.Math\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AForge", "AForge\AForge.csproj", "{F187CB81-4677-4BF9-834B-ABD6F0935919}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepTime.RL", "DeepTime.RL\DeepTime.RL.csproj", "{BE2AA120-34DF-4D7F-A5AC-865E78224AEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepTime.RL", "DeepTime.RL\DeepTime.RL.csproj", "{BE2AA120-34DF-4D7F-A5AC-865E78224AEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

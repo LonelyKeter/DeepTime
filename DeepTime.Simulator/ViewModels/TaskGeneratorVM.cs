@@ -119,6 +119,9 @@ public partial class TaskGeneratorVM : ObservableValidator,
         MediumPriority = new(generator[Priority.Medium]);
         LowPriority = new(generator[Priority.Low]);
         VeryLowPriority = new(generator[Priority.VeryLow]);
+
+        OnPropertyChanged(nameof(MinDuration));
+        OnPropertyChanged(nameof(MaxDuration));
     }
 
     public void Receive(SimulationStartedMessage message)

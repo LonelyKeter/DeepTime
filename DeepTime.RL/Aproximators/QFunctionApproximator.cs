@@ -27,7 +27,6 @@ public class QFunctionApproximator : IQFunction
             new int[]
             {
                 stateVecLength * 3 / 2,
-                stateVecLength * 3 / 2,
             },
             1.0,
             0.1
@@ -41,7 +40,7 @@ public class QFunctionApproximator : IQFunction
     public void CorrectQValue(double[] state, int takenAction, double correction)
     {
         var target = _model.Compute(state);
-        target[takenAction] = (1 - Config.LearningRate) * target[takenAction] + Config.LearningRate * correction;
+        target[takenAction] = target[takenAction] + Config.LearningRate * correction;
 
         _model.Train(state, target);
     }
@@ -55,8 +54,6 @@ public class QFunctionApproximator : IQFunction
 public class QApproximatorConfig
 {
     public const double DefaultLearningRate = 0.001;
-    public const int DefaultTrainingStep = 1;
 
-    public int TrainingStep { get; set; } = DefaultTrainingStep;
     public double LearningRate { get; set; } = DefaultLearningRate;
 }

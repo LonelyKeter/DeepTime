@@ -88,7 +88,7 @@ public class SimulationService :
     public void SimulateDay()
     {
         Messenger.Send(new DayFinishedMessage(SimulationTool.SimulateDay()));
-    }
+    }   
 
     public void StartDay()
     {

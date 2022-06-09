@@ -8,22 +8,21 @@ using DeepTime.RL;
 public class SimulationTool<TTask> where TTask : ITask
 {
     private readonly Advisor<TTask> _advisor;
-
     private readonly IUser<TTask> _user;
-    private readonly SimulatedScheduleSouce _scheduleSource;
-
-    private readonly List<TTask> _lastAdvice = new();
-
+    private readonly SimulatedScheduleSouce _scheduleSource;    
     public ITaskManager<TTask> TaskManager { get; }
     public ITaskGenerator<TTask> TaskGenerator { get; set; }
-    public IStatistics Statistics => _advisor.Statistics;
+
+
     public IAgent Agent
     {
         get => _advisor.Agent;
         set => _advisor.Agent = value;
     }
 
+    private readonly List<TTask> _lastAdvice = new();
     public IReadOnlyList<TTask> LastAdvice => _lastAdvice;
+
     public UserFeedback? CurrentFeedback { get; private set; } = null;
     public ScheduleContext ScheduleContext => _scheduleSource.GetCurrent();
 
@@ -46,7 +45,6 @@ public class SimulationTool<TTask> where TTask : ITask
     public bool StepForward()
     {
         ApplyAction();
-        UpdateAdvices();
 
         CurrentFeedback = _user.GetFeedback(_lastAdvice, TaskManager);
 
@@ -63,11 +61,11 @@ public class SimulationTool<TTask> where TTask : ITask
         return FinishDay();
     }
 
-    public void SimulateDays(int dayCount)
+    public IEnumerable<StatisticsEntry> SimulateDays(int dayCount)
     {
         for (var i = 0; i < dayCount; i++)
         {
-            SimulateDay();
+            yield return SimulateDay();
         }
     }
 
@@ -98,9 +96,16 @@ public class SimulationTool<TTask> where TTask : ITask
             _user.DoTask(feedback);
 
             if (feedback.Done)
+            {
                 TaskManager.MarkAsDone(feedback.TaskId, feedback.MinutesSpent);
+                var priority = TaskManager[feedback.TaskId].Priority;
+                UpdateAdvices(_advisor.SubmitComplition(priority));
+            }
             else
+            {
                 TaskManager.SubmitProgress(feedback.TaskId, feedback.MinutesSpent, feedback.NewEstimate);
+                UpdateAdvices(_advisor.GetAdvice());
+            }
 
             _scheduleSource.StepForward(feedback.MinutesSpent);
         }
@@ -108,17 +113,17 @@ public class SimulationTool<TTask> where TTask : ITask
         {
             _scheduleSource.StepForward(MinQueryMinutes);
             _user.RestFor(MinQueryMinutes);
+            UpdateAdvices(_advisor.GetAdvice());
         }
     }
 
-    private void UpdateAdvices()
+    private void UpdateAdvices(IEnumerable<TTask>? propositions)
     {
         _lastAdvice.Clear();
-        var advice = _advisor.GetAdvice(TaskManager);
 
-        if (advice is not null)
+        if (propositions is not null)
         {
-            _lastAdvice.AddRange(advice);
+            _lastAdvice.AddRange(propositions);
         }
     }
 
@@ -138,7 +143,7 @@ public class SimulationTool<TTask> where TTask : ITask
         _user.StartDay(TaskManager);
         _advisor.StartDay(TaskManager);
 
-        UpdateAdvices();
+        UpdateAdvices(_advisor.GetAdvice());
         CurrentFeedback = _user.GetFeedback(_lastAdvice, TaskManager);
 
         DayGoes = true;
@@ -151,7 +156,7 @@ public class SimulationTool<TTask> where TTask : ITask
             throw new InvalidOperationException();
         }
 
-        var entry = _advisor.FinishDay(TaskManager);
+        var entry = _advisor.FinishDay();
 
         TaskManager.Clear();
         TaskGenerator.ResetCounter();

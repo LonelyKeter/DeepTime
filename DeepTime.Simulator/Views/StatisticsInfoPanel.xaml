@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.StatisticsInfoPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance vm:StatisticsVM}">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+    <UserControl.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="5 5"/>
+        </Style>
+    </UserControl.Resources>
+    
+    <Grid
+        VerticalAlignment="Center"
+        HorizontalAlignment="Center">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="1"
+              Margin="0 5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="6">
+                Average task complition percentage (by priority)
+            </TextBlock>
+
+            <TextBlock Grid.Row="1" Grid.Column="0">
+                Very low: <Run Text="{Binding VeryLowPriorityAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1">
+                Low: <Run Text="{Binding LowPriorityAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="2">
+                Medium: <Run Text="{Binding MediumPriorityAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="3">
+                High: <Run Text="{Binding HighPriorityAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="4">
+                Very high: <Run Text="{Binding VeryHighPriorityAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="6">
+                Total: <Run Text="{Binding TotalAverageComplition, StringFormat=N1}"/>
+            </TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="0"              
+              Margin="0 5">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2">Rewards</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="0">
+                Average: <Run Text="{Binding AverageReward, StringFormat=N3}"/>
+            </TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1">
+                Median: <Run Text="{Binding MedianReward, StringFormat=N3}"/>
+            </TextBlock>
+        </Grid>        
+    </Grid>
+</UserControl>

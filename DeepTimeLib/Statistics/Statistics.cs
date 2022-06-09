@@ -2,48 +2,80 @@
 
 using DeepTime.Advisor.Data;
 
+using System.Collections.Generic;
+using System.Linq;
+
 public class Statistics : IStatistics
 {
-    private List<StatisticsEntry> _stats = new();
-    private MedianHeap<double> _medianHeap = new();
+    private readonly Queue<StatisticsEntry> _history = new();
+    private readonly MedianList<double> _medianList = new();
 
-    public int Count => _stats.Count;
-    
-    public double? Median => _medianHeap.PeekMedian();
-    public double? Average { get; private set; } = default;
-    public double? Min { get; private set; } = default;
-    public double? Max { get; private set; } = default;
-    public IReadOnlyList<StatisticsEntry> Stats => _stats;
+    public double AverageTaskComplition(Priority pr) => _history.Select(entry => entry.TasksDone[pr.AsIndex()].Percentage).Average();
+    public double AverageTaskComplition() => _history.Select(entry => entry.Total.Percentage).Average();
+
+    public int Count => _history.Count;
+
+    private int _accountFor = 100;
+    public int AccountFor
+    {
+        get => _accountFor;
+        set
+        {
+            if (_accountFor != value)
+            {
+                _accountFor = value;
+                TrimExcess();
+            }
+        }
+    }
+
+    public double? MedianReward => _medianList.Median;
+    public double? AverageReward => _history.Count > 0 ? _history.Select(entry => entry.EpisodeReward).Average() : null;
+
+    public StatisticValues? StatisticValues => Count == 0 ? null : new(
+        MedianReward.Value,
+        AverageReward.Value,
+        Types.PriorityValues.Select(AverageTaskComplition).ToArray(),
+        AverageTaskComplition());
 
     public void Submit(StatisticsEntry entry)
     {
-        _stats.Add(entry);
-        _medianHeap.Push(entry.EpisodeReward);
-
-        if (!(Min <= entry.EpisodeReward))
-            Min = entry.EpisodeReward;
-
-        if (!(Max >= entry.EpisodeReward))
-            Max = entry.EpisodeReward;
-
-        if (Average.HasValue)
-        {
-            Average = Average * ((double)(Count - 1) / Count) + entry.EpisodeReward / Count;
-        }
-        else
-        {
-            Average = entry.EpisodeReward;
-        }
+        AddEntryData(entry);
     }
 
     public void Clear()
     {
-        _stats.Clear();
-        _medianHeap.Clear();
+        _history.Clear();
+        _medianList.Clear();
+    }
 
-        Min = Max = default;
+    private void AddEntryData(StatisticsEntry entry)
+    {
+        TrimExcess();
+
+        _history.Enqueue(entry);
+        _medianList.Add(entry.EpisodeReward);
+    }
+
+    private void TrimExcess()
+    {
+        if (Count < AccountFor || AccountFor == 0) return;
+
+        var excess = Math.Max(Count - AccountFor, 1);
+
+        foreach (var _ in Enumerable.Range(0, excess))
+        {
+            var removed = _history.Dequeue().EpisodeReward;
+            _medianList.Remove(removed);
+        }
     }
 }
+
+public record struct StatisticValues(
+    double MedianReward,
+    double AverageReward,
+    double[] AverageTaskComplition,
+    double TotalTaskComplition);
 
 public record struct StatisticsEntry(TaskEntry[] TasksDone, double EpisodeReward)
 {
@@ -53,4 +85,7 @@ public record struct StatisticsEntry(TaskEntry[] TasksDone, double EpisodeReward
     public TaskEntry Total => new(AllDone, AllTodo);
 }
 
-public record struct TaskEntry(int Done, int Todo);
+public record struct TaskEntry(int Done, int Todo)
+{
+    public double Percentage => Done * 100.0 / Todo;
+}

@@ -8,12 +8,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="30" d:DesignWidth="70"
              d:DataContext="{d:DesignInstance stat:TaskEntry}">
-    <TextBlock
-        HorizontalAlignment="Center">
-        <Run Text="{Binding Done,Mode=OneTime}"
-             Foreground="DarkOliveGreen"/>
-        /
-        <Run Text="{Binding Todo,Mode=OneTime}"
-             Foreground="Black"/>
+    <TextBlock HorizontalAlignment="Center">
+                <Run Text="{Binding Done,Mode=OneTime}"/>/
+                <Run Text="{Binding Todo,Mode=OneTime}"/>
+                (<Run Text="{Binding Percentage, Mode=OneTime, StringFormat=N1}"/>%)
     </TextBlock>
 </UserControl>

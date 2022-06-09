@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="DeepTime.Simulator.Views.StatisticsPlotPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DeepTime.Simulator.Views"
+             xmlns:vm="clr-namespace:DeepTime.Simulator.ViewModels"
+             xmlns:lc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance vm:StatisticsVM}">
+    <d:DesignerProperties.DesignStyle>
+        <Style TargetType="UserControl">
+            <Setter Property="Background" Value="White"/>
+        </Style>
+    </d:DesignerProperties.DesignStyle>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <lc:CartesianChart Grid.Row ="0"
+                           Margin="10 10"
+                           
+                           ZoomMode="X"                           
+                           Series="{Binding PlotConfig.Series}"
+                           XAxes="{Binding PlotConfig.XAxes}"
+                           YAxes="{Binding PlotConfig.YAxes}"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <CheckBox Grid.Column="0" 
+                      HorizontalAlignment="Center"
+                      IsChecked="{Binding RewardsVisible}">
+                Show rewards
+            </CheckBox>
+            <CheckBox Grid.Column="1" 
+                      HorizontalAlignment="Center"
+                      IsChecked="{Binding TaskPercentageVisible}">
+                Show task progress
+            </CheckBox>
+        </Grid>
+    </Grid>
+</UserControl>

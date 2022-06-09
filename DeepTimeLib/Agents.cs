@@ -17,7 +17,7 @@ public static class Agents
             new(
                 Data.StateConverter.InputSize,
                 Data.AdviceEnumerator.EnumCount,
-                new()),
+                new() { LearningRate = hyperParameters.LearningRate}),
             hyperParameters);
     }
 }
