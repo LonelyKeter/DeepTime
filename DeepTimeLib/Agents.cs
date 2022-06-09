@@ -45,4 +45,8 @@ public static class Agents
                     .Select(AdviceEnumerator.Enumerate)
                 ),
             AdviceEnumerator.Enumerate(Advice.PickRest));
+
+    public static RandomAgent CreateRandomAgent() => new(
+            StateConverter.InputSize,
+            AdviceEnumerator.EnumCount);
 }

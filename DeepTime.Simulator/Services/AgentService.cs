@@ -14,6 +14,7 @@ public class AgentService
 
     private readonly IAgent _passive = DeepTime.Advisor.Agents.CreatePassiveAgent();
     private readonly IAgent _naive = DeepTime.Advisor.Agents.CreateVeryHighPriorityAgent();
+    private readonly IAgent _random = DeepTime.Advisor.Agents.CreateRandomAgent();
 
     public IAgent Agent { get; private set; }
     public IMessenger Messenger { get; }
@@ -21,8 +22,9 @@ public class AgentService
     public const string DQNKey = "DQN";
     public const string PassiveKey = "Passive";
     public const string NaiveKey = "Naive";
+    public const string RandomKey = "Random";
 
-    public static readonly IReadOnlyCollection<string> AvailableAgents = new[] { DQNKey, PassiveKey, NaiveKey };
+    public static readonly IReadOnlyCollection<string> AvailableAgents = new[] { DQNKey, PassiveKey, NaiveKey, RandomKey };
 
     public string CurrentAgentType { get; private set; }    
 
@@ -56,6 +58,10 @@ public class AgentService
             case NaiveKey:
                 CurrentAgentType = NaiveKey;
                 Agent = _naive;
+                break;
+            case RandomKey:
+                CurrentAgentType = RandomKey;
+                Agent = _random;
                 break;
         }
 
