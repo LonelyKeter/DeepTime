@@ -4,7 +4,7 @@ using DeepTime.Advisor.Data;
 public interface IUser<TTask> where TTask : ITask
 {
     UserFeedback? GetFeedback<P, T>(P? propositions, T tasks)
-        where P : IEnumerable<TTask>
+        where P : IReadOnlyList<TTask>
         where T : IEnumerable<TTask>;
 
     void DoTask(UserFeedback feedback);

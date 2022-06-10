@@ -26,7 +26,7 @@ public class QFunctionApproximator : IQFunction
             actionCount,
             new int[]
             {
-                stateVecLength * 3 / 2,
+                (int)(stateVecLength * 2.0 / 3.0),
             },
             1.0,
             0.1

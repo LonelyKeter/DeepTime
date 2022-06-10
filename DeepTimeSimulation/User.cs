@@ -25,10 +25,15 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
     }
 
     public UserFeedback? GetFeedback<P, T>(P? propositions, T tasks)
-        where P : IEnumerable<TTask>
+        where P : IReadOnlyList<TTask>
         where T : IEnumerable<TTask>
     {
         if (!CanWork) return null;
+
+        if (Config.Strategy == UserStrategy.AcceptAll)
+        {
+            return ChooseTaskRandomly(propositions);
+        }
 
         if (propositions is not null && ChooseTaskFromPropositions(propositions, out var feedback))
             return feedback;
@@ -76,7 +81,7 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
         }
     }
 
-    public void StartDay(IEnumerable<TTask> tasks)
+    public void StartDay(IEnumerable<TTask> _)
     {
         _state = InitialUserState;
     }
@@ -88,6 +93,7 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
         {
             UserStrategy.AttractiveFirst => ChooseTaskAttractiveFirst(tasks),
             UserStrategy.PriorFirst => ChooseTaskPriorFirst(tasks),
+            UserStrategy.AcceptAll => null,
             _ => throw new InvalidOperationException("Invalid user strategy.")
         };
     }
@@ -129,12 +135,25 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
         return max is not null ? PrepareFeedback(max) : null;
     }
 
+    private UserFeedback? ChooseTaskRandomly<T>(T? tasks)
+        where T: IReadOnlyList<TTask>
+    {
+        if (tasks is T collection)
+        {
+            return PrepareFeedback(collection[new Random().Next(0, collection.Count)]);
+        }
+        else
+        {
+            return null;
+        }
+    }
+
     private bool ChooseTaskFromPropositions<P>(P propositions, out UserFeedback? feedback)
-        where P : IEnumerable<TTask>
+        where P : IReadOnlyCollection<TTask>
     {
         var choice = propositions
             .Cast<TTask?>()
-            .FirstOrDefault(prop => IsPropositonAcceptable(prop));
+            .FirstOrDefault(IsPropositonAcceptable);
 
         if (choice is not null)
         {
@@ -184,6 +203,11 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
 
     private bool IsPropositonAcceptable(TTask prop)
     {
+        if (Config.Strategy == UserStrategy.AcceptAll)
+        {
+            return true;
+        }
+
         if (PriorityAcceptable(prop.Priority) || AttractivenessAcceptable(prop.Attractiveness))
             return _state.IsResting || prop.Id != _state.LastTaskId.Value || State.MinutesWorkedOnLastTask < Config.MaxMinutesOnOneTask;
         else
@@ -207,7 +231,8 @@ public class User<TTask> : IUser<TTask> where TTask: ITask
 public enum UserStrategy
 {
     AttractiveFirst,
-    PriorFirst
+    PriorFirst,
+    AcceptAll
 }
 
 public interface IUserConfig
